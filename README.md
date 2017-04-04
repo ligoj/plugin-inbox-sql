@@ -1,1 +1,1 @@
-# plugin-alert-sql
+# plugin-mail-smtp

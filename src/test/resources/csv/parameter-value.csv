@@ -1,0 +1,5 @@
+parameter.id;node.id;data
+service:mail:smtp:username;service:mail:smtp:local;user
+service:mail:smtp:password;service:mail:smtp:local;secret
+service:mail:smtp:port;service:mail:smtp:local;25
+service:mail:smtp:host;service:mail:smtp:local;localhost
