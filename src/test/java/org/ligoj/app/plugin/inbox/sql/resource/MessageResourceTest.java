@@ -1,4 +1,4 @@
-package org.ligoj.app.plugin.alert.sql.resource;
+package org.ligoj.app.plugin.inbox.sql.resource;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,12 +27,10 @@ import org.ligoj.app.model.Parameter;
 import org.ligoj.app.model.ParameterValue;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.model.Subscription;
-import org.ligoj.app.plugin.alert.sql.dao.MessageRepository;
-import org.ligoj.app.plugin.alert.sql.model.Message;
-import org.ligoj.app.plugin.alert.sql.model.MessageRead;
-import org.ligoj.app.plugin.alert.sql.model.MessageTargetType;
-import org.ligoj.app.plugin.alert.sql.resource.MessageResource;
-import org.ligoj.app.plugin.alert.sql.resource.MessageVo;
+import org.ligoj.app.plugin.inbox.sql.dao.MessageRepository;
+import org.ligoj.app.plugin.inbox.sql.model.Message;
+import org.ligoj.app.plugin.inbox.sql.model.MessageRead;
+import org.ligoj.app.plugin.inbox.sql.model.MessageTargetType;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.springframework.beans.factory.annotation.Autowired;

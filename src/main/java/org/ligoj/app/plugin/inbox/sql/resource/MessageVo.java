@@ -1,9 +1,9 @@
-package org.ligoj.app.plugin.alert.sql.resource;
+package org.ligoj.app.plugin.inbox.sql.resource;
 
 import org.ligoj.app.api.NodeVo;
 import org.ligoj.app.iam.SimpleUser;
-import org.ligoj.app.plugin.alert.sql.model.Message;
 import org.ligoj.app.plugin.id.resource.ContainerWithScopeVo;
+import org.ligoj.app.plugin.inbox.sql.model.Message;
 import org.ligoj.app.resource.project.ProjectLightVo;
 
 import lombok.Getter;

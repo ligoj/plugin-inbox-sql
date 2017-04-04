@@ -1,9 +1,10 @@
-package org.ligoj.app.plugin.alert.sql.model;
+package org.ligoj.app.plugin.inbox.sql.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 

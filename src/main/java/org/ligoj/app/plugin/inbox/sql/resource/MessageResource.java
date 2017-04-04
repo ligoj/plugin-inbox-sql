@@ -1,4 +1,4 @@
-package org.ligoj.app.plugin.alert.sql.resource;
+package org.ligoj.app.plugin.inbox.sql.resource;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,16 +23,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.ligoj.app.api.FeaturePlugin;
 import org.ligoj.app.iam.IUserRepository;
 import org.ligoj.app.iam.IamProvider;
-import org.ligoj.app.plugin.alert.sql.dao.MessageReadRepository;
-import org.ligoj.app.plugin.alert.sql.dao.MessageRepository;
-import org.ligoj.app.plugin.alert.sql.model.Message;
-import org.ligoj.app.plugin.alert.sql.model.MessageRead;
-import org.ligoj.app.plugin.alert.sql.model.MessageTargetType;
 import org.ligoj.app.plugin.id.resource.CompanyResource;
 import org.ligoj.app.plugin.id.resource.GroupResource;
 import org.ligoj.app.plugin.id.resource.UserOrgResource;
+import org.ligoj.app.plugin.inbox.sql.dao.MessageReadRepository;
+import org.ligoj.app.plugin.inbox.sql.dao.MessageRepository;
+import org.ligoj.app.plugin.inbox.sql.model.Message;
+import org.ligoj.app.plugin.inbox.sql.model.MessageRead;
+import org.ligoj.app.plugin.inbox.sql.model.MessageTargetType;
 import org.ligoj.app.resource.node.NodeResource;
 import org.ligoj.app.resource.project.BasicProjectVo;
 import org.ligoj.app.resource.project.ProjectResource;
@@ -62,7 +63,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Transactional
 @Produces(MediaType.APPLICATION_JSON)
-public class MessageResource implements InitializingBean, ISessionSettingsProvider {
+public class MessageResource implements InitializingBean, ISessionSettingsProvider, FeaturePlugin {
 
 	@Autowired
 	private MessageRepository repository;
@@ -359,5 +360,10 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	public void decorate(final SessionSettings settings) {
 		// Add the unread messages counter
 		settings.getUserSettings().put("unreadMessages", repository.countUnread(settings.getUserName()));
+	}
+
+	@Override
+	public String getKey() {
+		return "feature:inbox-sql";
 	}
 }

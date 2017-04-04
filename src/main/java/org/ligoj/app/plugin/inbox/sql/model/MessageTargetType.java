@@ -1,4 +1,4 @@
-package org.ligoj.app.plugin.alert.sql.model;
+package org.ligoj.app.plugin.inbox.sql.model;
 
 /**
  * Message target type

@@ -1,8 +1,8 @@
-package org.ligoj.app.plugin.alert.sql.dao;
+package org.ligoj.app.plugin.inbox.sql.dao;
 
 import org.ligoj.app.dao.ProjectRepository;
 import org.ligoj.app.iam.dao.DelegateOrgRepository;
-import org.ligoj.app.plugin.alert.sql.model.Message;
+import org.ligoj.app.plugin.inbox.sql.model.Message;
 import org.ligoj.bootstrap.core.dao.RestRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

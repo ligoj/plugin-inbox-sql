@@ -1,4 +1,4 @@
-package org.ligoj.app.plugin.alert.sql.model;
+package org.ligoj.app.plugin.inbox.sql.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-
 import org.ligoj.bootstrap.core.model.AbstractAudited;
+
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,6 @@
-package org.ligoj.app.plugin.alert.sql.dao;
+package org.ligoj.app.plugin.inbox.sql.dao;
 
-import org.ligoj.app.plugin.alert.sql.model.MessageRead;
+import org.ligoj.app.plugin.inbox.sql.model.MessageRead;
 import org.ligoj.bootstrap.core.dao.RestRepository;
 
 /**
