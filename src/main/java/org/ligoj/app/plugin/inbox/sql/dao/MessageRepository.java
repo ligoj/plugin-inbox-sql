@@ -18,14 +18,14 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 * Base query to find related messages of a user.
 	 */
 	String MY_MESSAGES = "FROM Message m WHERE (targetType IS NULL                           "
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.USER    AND target = :user)"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user.id = :user AND (c.group.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND target = :user)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user.id = :user AND (c.group.id = m.target"
 			+ "       OR EXISTS(SELECT 1 FROM CacheGroup cg WHERE cg.id=m.target AND c.group.description LIKE CONCAT('%,', cg.description)))))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheUser c WHERE c.id = :user AND (c.company.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheUser c WHERE c.id = :user AND (c.company.id = m.target"
 			+ "       OR EXISTS(SELECT 1 FROM CacheCompany cc WHERE cc.id=m.target AND c.company.description LIKE CONCAT('%,', cc.description)))))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
 			+ ProjectRepository.MY_PROJECTS + "))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
 			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND " + ProjectRepository.MY_PROJECTS + ")))";
 
 	/**
@@ -33,16 +33,16 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 * messages sent directly to another user.
 	 */
 	String VISIBLE_MESSAGES = "FROM Message m WHERE (targetType IS NULL                           "
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.USER    AND createdBy = :user)"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheGroup c WHERE c.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND createdBy = :user)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheGroup c WHERE c.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateOrg d WHERE (d.type=org.ligoj.app.iam.model.DelegateType.TREE OR d.type=org.ligoj.app.iam.model.DelegateType.GROUP)"
 			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE + ")))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheCompany c WHERE c.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheCompany c WHERE c.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateOrg d WHERE (d.type=org.ligoj.app.iam.model.DelegateType.TREE OR d.type=org.ligoj.app.iam.model.DelegateType.COMPANY)"
 			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE + ")))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
 			+ ProjectRepository.VISIBLE_PROJECTS + "))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Node n WHERE n.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Node n WHERE n.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateNode d WHERE " + DelegateOrgRepository.ASSIGNED_DELEGATE
 			+ " AND (n.id LIKE CONCAT(d.name, ':%') OR n.id = d.id)))))";
 
@@ -59,14 +59,14 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 * Base query to find related messages of a user.
 	 */
 	String AUDIENCE_MESSAGES = "FROM Message m WHERE (targetType IS NULL                           "
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.USER    AND target = :user)"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user.id = :user AND (c.group.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND target = :user)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user.id = :user AND (c.group.id = m.target"
 			+ "       OR EXISTS(SELECT 1 FROM CacheGroup cg WHERE cg.id=m.target AND c.group.description LIKE CONCAT('%,', cg.description)))))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheUser c WHERE c.id = :user AND (c.company.id = m.target"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheUser c WHERE c.id = :user AND (c.company.id = m.target"
 			+ "       OR EXISTS(SELECT 1 FROM CacheCompany cc WHERE cc.id=m.target AND c.company.description LIKE CONCAT('%,', cc.description)))))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
 			+ ProjectRepository.MY_PROJECTS + "))"
-			+ "  OR (targetType = org.ligoj.app.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
 			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND " + ProjectRepository.MY_PROJECTS + ")))";
 
 	/**
@@ -133,7 +133,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 			+ "       OR EXISTS(SELECT 1 FROM CacheCompany cc WHERE cc.id=:target AND u.company.description LIKE CONCAT('%,', cc.description))))"
 			+ "  OR (:targetType = 'PROJECT'  AND EXISTS(SELECT 1 FROM Project p WHERE p.pkey = :target AND " + HIS_PROJECTS + "))"
 			+ "  OR (:targetType = 'NODE'     AND EXISTS(SELECT 1 FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE "
-			+ HIS_PROJECTS + "        AND (n000.id = :target OR n000.id LIKE CONCAT(:target, ':%'))))")
+			+ HIS_PROJECTS + " AND (n000.id = :target OR n000.id LIKE CONCAT(:target, ':%'))))")
 	int audience(String targetType, String target);
 
 	/**

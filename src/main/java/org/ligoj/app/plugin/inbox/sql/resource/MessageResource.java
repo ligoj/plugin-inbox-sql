@@ -78,19 +78,19 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	private IamProvider iamProvider;
 
 	@Autowired
-	private UserOrgResource userResource;
+	protected UserOrgResource userResource;
 
 	@Autowired
-	private CompanyResource companyResource;
+	protected CompanyResource companyResource;
 
 	@Autowired
-	private ProjectResource projectResource;
+	protected ProjectResource projectResource;
 
 	@Autowired
-	private NodeResource nodeResource;
+	protected NodeResource nodeResource;
 
 	@Autowired
-	private GroupResource groupResource;
+	protected GroupResource groupResource;
 
 	@Autowired
 	private MessageReadRepository messageReadRepository;
@@ -338,7 +338,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		checker.put(MessageTargetType.COMPANY, companyResource::findByIdExpected);
 		checker.put(MessageTargetType.GROUP, groupResource::findByIdExpected);
 		checker.put(MessageTargetType.PROJECT, projectResource::findByPKey);
