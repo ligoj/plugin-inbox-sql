@@ -1,1 +1,1 @@
-# plugin-mail-smtp
+# plugin-inbox-sql
