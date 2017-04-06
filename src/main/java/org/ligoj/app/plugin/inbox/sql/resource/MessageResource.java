@@ -288,11 +288,11 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 			m.setId(securityHelper.getLogin());
 			return m;
 		});
-		messageRead.setMessageId(Integer.max(messages.getData().stream().filter(m -> m.getId() > messageRead.getMessageId()).map(m -> {
+		messageRead.setMessage(Integer.max(messages.getData().stream().filter(m -> m.getId() > messageRead.getMessage()).map(m -> {
 			// Then update the unread state of new messages
 			m.setUnread(true);
 			return m.getId();
-		}).max(Comparator.naturalOrder()).orElse(0), messageRead.getMessageId()));
+		}).max(Comparator.naturalOrder()).orElse(0), messageRead.getMessage()));
 
 		// Persist the state even if the user might has not read/seen the message
 		messageReadRepository.save(messageRead);
@@ -354,7 +354,6 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	private IUserRepository getUser() {
 		return iamProvider.getConfiguration().getUserRepository();
 	}
-
 
 	@Override
 	public void decorate(final SessionSettings settings) {
