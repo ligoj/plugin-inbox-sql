@@ -3,7 +3,9 @@ package org.ligoj.app.plugin.inbox.sql.resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
@@ -40,6 +42,7 @@ import org.ligoj.app.plugin.inbox.sql.model.MessageRead;
 import org.ligoj.app.plugin.inbox.sql.model.MessageTargetType;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
+import org.ligoj.bootstrap.resource.system.session.SessionSettings;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -254,7 +257,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void createUserMarkup() {
 		final MessageRead messageRead = new MessageRead();
 		messageRead.setId("alongchu");
-		messageRead.setMessageId(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
+		messageRead.setMessage(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
 				.setParameter("type", MessageTargetType.PROJECT).getSingleResult() + 2);
 		em.persist(messageRead);
 		Assert.assertEquals(0, repository.countUnread("alongchu"));
@@ -435,7 +438,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		container1.setName("gfi");
 		container1.setScope("some");
 		container1.setLocked(false);
-		Mockito.when(resource.companyResource.findByName("gfi")).thenReturn(container1 );
+		Mockito.when(resource.companyResource.findByName("gfi")).thenReturn(container1);
 		resource.groupResource = Mockito.mock(GroupResource.class);
 		Mockito.when(resource.groupResource.findByIdExpected("gfi-gstack"))
 				.thenReturn(new GroupOrg("dn", "gfi-gstack", Collections.emptySet()));
@@ -444,7 +447,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		container2.setName("gfi-gStack");
 		container2.setScope("some");
 		container2.setLocked(false);
-		Mockito.when(resource.groupResource.findByName("gfi-gstack")).thenReturn(container2 );
+		Mockito.when(resource.groupResource.findByName("gfi-gstack")).thenReturn(container2);
 		resource.afterPropertiesSet();
 
 		initSpringSecurityContext("alongchu");
@@ -549,7 +552,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		initSpringSecurityContext("alongchu");
 		final MessageRead messageRead = new MessageRead();
 		messageRead.setId("alongchu");
-		messageRead.setMessageId(0);
+		messageRead.setMessage(0);
 		em.persist(messageRead);
 		Assert.assertEquals(6, resource.countUnread());
 	}
@@ -562,7 +565,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		initSpringSecurityContext("alongchu");
 		final MessageRead messageRead = new MessageRead();
 		messageRead.setId("alongchu");
-		messageRead.setMessageId(Integer.MAX_VALUE);
+		messageRead.setMessage(Integer.MAX_VALUE);
 		em.persist(messageRead);
 		Assert.assertEquals(0, resource.countUnread());
 	}
@@ -679,7 +682,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		// a project
 		final MessageRead messageRead = new MessageRead();
 		messageRead.setId("alongchu");
-		messageRead.setMessageId(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
+		messageRead.setMessage(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
 				.setParameter("type", MessageTargetType.PROJECT).getSingleResult() - 1);
 		em.persist(messageRead);
 	}
@@ -687,7 +690,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	private void assertMessageCreate(final MessageResource resource, final Message message) {
 		final MessageRead messageRead = new MessageRead();
 		messageRead.setId("alongchu");
-		messageRead.setMessageId(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
+		messageRead.setMessage(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
 				.setParameter("type", MessageTargetType.PROJECT).getSingleResult() + 2);
 		em.persist(messageRead);
 		Assert.assertEquals(0, repository.countUnread("alongchu"));
@@ -697,9 +700,21 @@ public class MessageResourceTest extends AbstractAppTest {
 		Assert.assertEquals("msg", repository.findOne(id).getValue());
 		Assert.assertEquals(1, repository.countUnread("alongchu"));
 	}
-	
+
 	@Test
 	public void getKey() {
 		Assert.assertEquals("feature:inbox:sql", resource.getKey());
+	}
+
+	@Test
+	public void decorate() {
+		initSpringSecurityContext("alongchu");
+		prepareUnreadPosition();
+		SessionSettings settings = Mockito.mock(SessionSettings.class);
+		Map<String, Object> userSettings = new HashMap<>();
+		Mockito.when(settings.getUserSettings()).thenReturn(userSettings);
+		Mockito.when(settings.getUserName()).thenReturn("alongchu");
+		resource.decorate(settings);
+		Assert.assertEquals(Integer.valueOf(3), userSettings.get("unreadMessages"));
 	}
 }

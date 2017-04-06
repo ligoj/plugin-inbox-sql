@@ -113,7 +113,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 * @return the amount of unread messages since the last time this user has read them.
 	 */
 	@Query("SELECT COUNT(m.id) " + MY_MESSAGES
-			+ " AND m.id > (SELECT CASE mr.messageId WHEN NULL THEN 0 ELSE mr.messageId END FROM MessageRead  mr WHERE mr.id = :user)")
+			+ " AND m.id > (SELECT CASE mr.message WHEN NULL THEN 0 ELSE mr.message END FROM MessageRead  mr WHERE mr.id = :user)")
 	int countUnread(String user);
 
 	/**

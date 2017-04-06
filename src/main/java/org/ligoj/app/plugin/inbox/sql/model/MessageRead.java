@@ -26,5 +26,5 @@ public class MessageRead extends AbstractBusinessEntity<String> {
 	 * Identifier of the last read message. It's not a foreign key to allow message deletion without updating this
 	 * value.
 	 */
-	private int messageId;
+	private int message;
 }
