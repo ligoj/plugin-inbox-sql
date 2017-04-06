@@ -364,6 +364,6 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 
 	@Override
 	public String getKey() {
-		return "feature:inbox-sql";
+		return "feature:inbox:sql";
 	}
 }

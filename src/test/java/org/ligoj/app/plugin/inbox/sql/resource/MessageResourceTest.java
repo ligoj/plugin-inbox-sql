@@ -697,4 +697,9 @@ public class MessageResourceTest extends AbstractAppTest {
 		Assert.assertEquals("msg", repository.findOne(id).getValue());
 		Assert.assertEquals(1, repository.countUnread("alongchu"));
 	}
+	
+	@Test
+	public void getKey() {
+		Assert.assertEquals("feature:inbox:sql", resource.getKey());
+	}
 }
