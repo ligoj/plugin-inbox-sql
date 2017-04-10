@@ -244,7 +244,7 @@ define(['cascade'], function ($cascade) {
 					break;
 			}
 			var result = '<a class="label label-' + style + ' avatar" data-toggle="tooltip" title="' + title + '"' + (href ? ' href="' + href + '"' : '');
-			result += content || '><i class="' + current.$main.messageTypeClass[type] + '"></i></a>';
+			result += content || '><i class="' + current.$main.targetTypeClass[type] + '"></i></a>';
 			return result;
 		},
 
