@@ -184,7 +184,7 @@ define(['cascade'], function ($cascade) {
 		toLink: function (type, data, text) {
 			if (type === 'user') {
 				var id = data ? data.id || data : null;
-				return id && ' <a href="#/service/id/user/' + id + '">' + current.$main.getFullName(data) + '</a>';
+				return id && ' <a href="#//id/user/' + id + '">' + current.$main.getFullName(data) + '</a>';
 			}
 			var href = current.toHref(type, data);
 			return href ? ' <a href="' + href + '">' + text + '</a>' : (' ' + text);
@@ -194,13 +194,13 @@ define(['cascade'], function ($cascade) {
 			var id = data || data.id;
 			switch (type) {
 				case 'company':
-					return id && '#/service/id/home/company=' + encodeURIComponent(id);
+					return id && '#/id/home/company=' + encodeURIComponent(id);
 				case 'group':
-					return id && '#/service/id/home/group=' + encodeURIComponent(id);
+					return id && '#/id/home/group=' + encodeURIComponent(id);
 				case 'project':
-					return id && '#/service/id/project/' + id;
+					return id && '#/id/project/' + id;
 				case 'user':
-					return id && '#/service/id/user/' + id;
+					return id && '#/id/user/' + id;
 				default:
 					return '';
 			}
@@ -215,7 +215,7 @@ define(['cascade'], function ($cascade) {
 			switch (type) {
 				case 'company':
 					style = 'danger';
-					href = data && data.id && '#/service/id/home/company=' + encodeURIComponent(data.id);
+					href = data && data.id && '#/id/home/company=' + encodeURIComponent(data.id);
 					break;
 				case 'node':
 					var fragments = (data.id || data || '::').split(':');
@@ -225,7 +225,7 @@ define(['cascade'], function ($cascade) {
 					break;
 				case 'group':
 					style = 'primary';
-					href = data && data.id && '#/service/id/home/group=' + encodeURIComponent(data.id);
+					href = data && data.id && '#/id/home/group=' + encodeURIComponent(data.id);
 					break;
 				case 'project':
 					style = 'success';
@@ -236,7 +236,7 @@ define(['cascade'], function ($cascade) {
 					style = 'warning';
 					if (data && data.id) {
 						title = current.$main.getFullName(data);
-						href = '#/service/id/user/' + data.id;
+						href = '#/id/user/' + data.id;
 						content = '>' + data.id.charAt(0) + data.id.charAt(1) + '</a>';
 					} else {
 						content = ' role="button">&nbsp;</a>';
@@ -283,7 +283,7 @@ define(['cascade'], function ($cascade) {
 
 			// From and target
 			content += '<div class="message-header">';
-			content += '<div class="from">' + current.$messages.notifications.from + (from ? ' : <a href="#/service/id/user/' + message.from.id + '">' + from + '</a>' : current.$messages.unknown) + '</div>';
+			content += '<div class="from">' + current.$messages.notifications.from + (from ? ' : <a href="#/id/user/' + message.from.id + '">' + from + '</a>' : current.$messages.unknown) + '</div>';
 			content += '<div class="to">' + current.$messages.notifications.to + ' : ';
 			content += current.toLink(message.targetType, message.user ? message.from : targetFull, targetI18n);
 			content += '</div></div>';
