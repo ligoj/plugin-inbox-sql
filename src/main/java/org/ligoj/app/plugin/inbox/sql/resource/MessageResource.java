@@ -75,7 +75,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	private PaginationJson paginationJson;
 
 	@Autowired
-	private IamProvider iamProvider;
+	private IamProvider[] iamProvider;
 
 	@Autowired
 	protected UserOrgResource userResource;
@@ -352,7 +352,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 * @return User repository provider.
 	 */
 	private IUserRepository getUser() {
-		return iamProvider.getConfiguration().getUserRepository();
+		return iamProvider[0].getConfiguration().getUserRepository();
 	}
 
 	@Override
