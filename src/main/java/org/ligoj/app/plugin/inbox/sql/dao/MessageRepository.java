@@ -76,7 +76,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 *            The user requesting the messages.
 	 * @param criteria
 	 *            Optional text to filter the messages.
-	 * @param pageable
+	 * @param page
 	 *            The ordering and page data.
 	 * @return The related messages
 	 */
@@ -97,7 +97,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 *            The user requesting the messages.
 	 * @param criteria
 	 *            Optional text to filter the messages.
-	 * @param pageable
+	 * @param page
 	 *            The ordering and page data.
 	 * @return The related messages
 	 */
