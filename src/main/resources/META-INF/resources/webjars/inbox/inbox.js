@@ -313,7 +313,8 @@ define(['cascade'], function ($cascade) {
 		 * @param type {string} The Message target type.
 		 */
 		updateTargetSelect2: function ($form, type) {
-			_('_message-to').removeClass('hidden').select2('destroy');
+			// Destroy the previous Select2 and reset the previous selection
+			_('_message-to').removeClass('hidden').select2('destroy').val('');
 			$form.find('.details').html(current.$messages.notifications['new-to-' + type + '-details']);
 			current.$main['newSelect2' + type.capitalize()]('.bs-inbox .message-new .target', null, null, null, type === 'project' && 'pkey', type === 'node').select2('data', null);
 			_('_message-to').trigger('change');
