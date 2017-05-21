@@ -15,6 +15,12 @@
 	<name>Ligoj - Plugin Inbox - SQL</name>
 	<description>Manage internal messaging within the application</description>
 
+	<scm>
+		<connection>scm:git:https://github.com/ligoj/plugin-inbox-sql</connection>
+		<developerConnection>scm:git:https://github.com/ligoj/plugin-inbox-sql</developerConnection>
+		<url>https://github.com/ligoj/plugin-inbox-sql.git</url>
+	</scm>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.ligoj.plugin</groupId>
