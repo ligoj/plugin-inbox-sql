@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * A simple entity holding the last read message by a user. Identifier is the login.
+ * A simple entity holding the last read message by a user. Identifier ({@link #getId()} is the login.
  */
 @Getter
 @Setter

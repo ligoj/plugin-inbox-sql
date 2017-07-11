@@ -18,7 +18,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -205,16 +204,14 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 * But with the other function {@link #findMy(String, UriInfo)} these messages will be returned because this user is
 	 * not member of this group.
 	 *
-	 * @param criteria
-	 *            The optional criteria to match : message content or target type, or target.
 	 * @param uriInfo
 	 *            filter data.
 	 * @return Related messages, already read or not. Also there is an indicator on the message specifying the "new"
 	 *         state.
 	 */
 	@GET
-	public TableItem<MessageVo> findAll(@QueryParam(DataTableAttributes.SEARCH) final String criteria, @Context final UriInfo uriInfo) {
-		return findAllProvider(uriInfo, (user, pageRequest) -> repository.findAll(user, criteria, pageRequest));
+	public TableItem<MessageVo> findAll(@Context final UriInfo uriInfo) {
+		return findAllProvider(uriInfo, (user, pageRequest) -> repository.findAll(user, DataTableAttributes.getSearch(uriInfo), pageRequest));
 	}
 
 	/**
@@ -235,8 +232,6 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	/**
 	 * Return messages related to current user. Also update at the same time the cursor indicating the read messages.
 	 *
-	 * @param criteria
-	 *            The optional criteria to match : message content or target type, or target.
 	 * @param uriInfo
 	 *            filter data.
 	 * @return Related messages, already read or not. Also there is an indicator on the message specifying the "new"
@@ -244,8 +239,8 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 */
 	@GET
 	@Path("my")
-	public TableItem<MessageVo> findMy(@QueryParam(DataTableAttributes.SEARCH) final String criteria, @Context final UriInfo uriInfo) {
-		return findAllProvider(uriInfo, (user, pageRequest) -> repository.findMy(user, criteria, pageRequest));
+	public TableItem<MessageVo> findMy(@Context final UriInfo uriInfo) {
+		return findAllProvider(uriInfo, (user, pageRequest) -> repository.findMy(user, DataTableAttributes.getSearch(uriInfo), pageRequest));
 	}
 
 	/**

@@ -26,6 +26,7 @@ import org.ligoj.app.iam.model.CacheGroup;
 import org.ligoj.app.iam.model.CacheMembership;
 import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.app.iam.model.DelegateOrg;
+import org.ligoj.app.model.CacheProjectGroup;
 import org.ligoj.app.model.DelegateNode;
 import org.ligoj.app.model.Node;
 import org.ligoj.app.model.Parameter;
@@ -69,12 +70,16 @@ public class MessageResourceTest extends AbstractAppTest {
 		persistEntities("csv",
 				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class,
 						Message.class, DelegateNode.class, DelegateOrg.class, CacheCompany.class, CacheUser.class,
-						CacheGroup.class, CacheMembership.class },
+						CacheGroup.class, CacheMembership.class, CacheProjectGroup.class },
 				StandardCharsets.UTF_8.name());
 	}
 
 	@Test
 	public void updateOwnMessageToMe() {
+		// Coverage only
+		Assert.assertEquals(MessageTargetType.COMPANY,
+				MessageTargetType.valueOf(MessageTargetType.values()[MessageTargetType.COMPANY.ordinal()].name()));
+
 		final int id = repository.findBy("target", DEFAULT_USER).getId();
 		em.clear();
 
@@ -358,14 +363,14 @@ public class MessageResourceTest extends AbstractAppTest {
 	@Test
 	public void findMyEmptyNoMatchingUser() {
 		initSpringSecurityContext("any");
-		Assert.assertEquals(0, resource.findMy(null, newUriInfo()).getData().size());
+		Assert.assertEquals(0, resource.findMy(newUriInfo()).getData().size());
 	}
 
 	@Test
 	public void findAll() {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "100");
-		final List<MessageVo> messages = resource.findAll(null, uriInfo).getData();
+		final List<MessageVo> messages = resource.findAll(uriInfo).getData();
 		Assert.assertEquals(17, messages.size());
 		Assert.assertEquals("junit", messages.get(0).getTarget());
 		Assert.assertEquals("gfi", messages.get(7).getTarget());
@@ -375,14 +380,14 @@ public class MessageResourceTest extends AbstractAppTest {
 
 		// Check pagination
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "2");
-		Assert.assertEquals(2, resource.findMy(null, uriInfo).getData().size());
+		Assert.assertEquals(2, resource.findMy(uriInfo).getData().size());
 	}
 
 	@Test
 	public void findMy() {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "100");
-		final List<MessageVo> messages = resource.findMy(null, uriInfo).getData();
+		final List<MessageVo> messages = resource.findMy(uriInfo).getData();
 		Assert.assertEquals(8, messages.size());
 		Assert.assertEquals("junit", messages.get(0).getTarget());
 		Assert.assertEquals("junit", messages.get(7).getTarget());
@@ -391,7 +396,7 @@ public class MessageResourceTest extends AbstractAppTest {
 
 		// Check pagination
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "2");
-		Assert.assertEquals(2, resource.findMy(null, uriInfo).getData().size());
+		Assert.assertEquals(2, resource.findMy(uriInfo).getData().size());
 	}
 
 	@Test
@@ -402,7 +407,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.SORT_DIRECTION, "desc");
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.SORTED_COLUMN, "1");
 		uriInfo.getQueryParameters().putSingle("columns[1][data]", "id");
-		final List<MessageVo> messages = resource.findMy(null, uriInfo).getData();
+		final List<MessageVo> messages = resource.findMy(uriInfo).getData();
 		Assert.assertEquals(6, messages.size());
 		Assert.assertEquals("service:bt", messages.get(5).getTarget());
 		Assert.assertEquals("service:build:jenkins:bpr", messages.get(4).getTarget());
@@ -415,7 +420,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	@Test
 	public void findMyUser() {
 		initSpringSecurityContext("user1");
-		final List<MessageVo> messages = resource.findMy(null, newUriInfo()).getData();
+		final List<MessageVo> messages = resource.findMy(newUriInfo()).getData();
 		Assert.assertEquals(1, messages.size());
 
 		final MessageVo message = messages.get(0);
@@ -461,7 +466,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.SORTED_COLUMN, "0");
 		uriInfo.getQueryParameters().putSingle("columns[0][data]", "id");
 
-		final List<MessageVo> messages = resource.findMy(null, uriInfo).getData();
+		final List<MessageVo> messages = resource.findMy(uriInfo).getData();
 		Assert.assertEquals(6, messages.size());
 
 		// Message for the company
@@ -538,7 +543,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		em.clear();
 
 		// Check the second pass, there is no more unread messages
-		final List<MessageVo> messagesRe = resource.findMy(null, uriInfo).getData();
+		final List<MessageVo> messagesRe = resource.findMy(uriInfo).getData();
 		Assert.assertEquals(6, messagesRe.size());
 		Assert.assertFalse(messagesRe.get(0).isUnread());
 		Assert.assertEquals(0, resource.countUnread());

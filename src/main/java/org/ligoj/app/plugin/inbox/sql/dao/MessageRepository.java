@@ -19,14 +19,11 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 */
 	String MY_MESSAGES = "FROM Message m WHERE (targetType IS NULL                           "
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND target = :user)"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user.id = :user AND (c.group.id = m.target"
-			+ "       OR EXISTS(SELECT 1 FROM CacheGroup cg WHERE cg.id=m.target AND c.group.description LIKE CONCAT('%,', cg.description)))))"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheUser c WHERE c.id = :user AND (c.company.id = m.target"
-			+ "       OR EXISTS(SELECT 1 FROM CacheCompany cc WHERE cc.id=m.target AND c.company.description LIKE CONCAT('%,', cc.description)))))"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
-			+ ProjectRepository.MY_PROJECTS + "))"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND ingroup(m.target,:user) IS TRUE)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND incompany(m.target,:user) IS TRUE)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND inprojectkey(m.target,:user,:user) IS TRUE)"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
-			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND " + ProjectRepository.MY_PROJECTS + ")))";
+			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND inproject(p,:user,:user) IS TRUE)))";
 
 	/**
 	 * Base query to find messages a user can see, even if there are not targeting him/her. User can also see his/her
@@ -40,7 +37,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheCompany c WHERE c.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateOrg d WHERE (d.type=org.ligoj.app.iam.model.DelegateType.TREE OR d.type=org.ligoj.app.iam.model.DelegateType.COMPANY)"
 			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE + ")))"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p LEFT JOIN p.cacheGroups AS cpg LEFT JOIN cpg.group AS cg   WHERE p.pkey = m.target AND "
 			+ ProjectRepository.VISIBLE_PROJECTS + "))"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Node n WHERE n.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateNode d WHERE " + DelegateOrgRepository.ASSIGNED_DELEGATE
@@ -50,24 +47,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	/**
 	 * Base query to find related project to a user "u.id".
 	 */
-	String HIS_PROJECTS = "(p.teamLeader = u.id"
-			+ " OR EXISTS(SELECT 1 FROM ParameterValue AS pv, CacheGroup g WHERE pv.parameter.id = 'service:id:group' AND pv.subscription.project = p AND g.id = pv.data"
-			+ "     AND EXISTS(SELECT 1 FROM CacheMembership AS cm WHERE cm.user.id = u.id AND cm.group = g)))";
-
-
-	/**
-	 * Base query to find related messages of a user.
-	 */
-	String AUDIENCE_MESSAGES = "FROM Message m WHERE (targetType IS NULL                           "
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND target = :user)"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user.id = :user AND (c.group.id = m.target"
-			+ "       OR EXISTS(SELECT 1 FROM CacheGroup cg WHERE cg.id=m.target AND c.group.description LIKE CONCAT('%,', cg.description)))))"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheUser c WHERE c.id = :user AND (c.company.id = m.target"
-			+ "       OR EXISTS(SELECT 1 FROM CacheCompany cc WHERE cc.id=m.target AND c.company.description LIKE CONCAT('%,', cc.description)))))"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p   WHERE p.pkey = m.target AND "
-			+ ProjectRepository.MY_PROJECTS + "))"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
-			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND " + ProjectRepository.MY_PROJECTS + ")))";
+	String HIS_PROJECTS = "(inproject2(p,u.id) IS TRUE)";
 
 	/**
 	 * Return all messages where the given user is involved and by criteria.
@@ -80,7 +60,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 *            The ordering and page data.
 	 * @return The related messages
 	 */
-	@Query(MY_MESSAGES + " AND (:criteria IS NULL OR targetType LIKE(CONCAT(CONCAT('%',:criteria),'%'))"
+	@Query(MY_MESSAGES + " AND (targetType LIKE(CONCAT(CONCAT('%',:criteria),'%'))"
 			+ "                 OR target LIKE(CONCAT(CONCAT('%',:criteria),'%')) OR value LIKE(CONCAT(CONCAT('%',:criteria),'%')))")
 	Page<Message> findMy(String user, String criteria, Pageable page);
 
@@ -101,7 +81,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 *            The ordering and page data.
 	 * @return The related messages
 	 */
-	@Query(VISIBLE_MESSAGES + " AND (:criteria IS NULL OR targetType LIKE(CONCAT(CONCAT('%',:criteria),'%'))"
+	@Query(VISIBLE_MESSAGES + " AND (targetType LIKE(CONCAT(CONCAT('%',:criteria),'%'))"
 			+ "                 OR target LIKE(CONCAT(CONCAT('%',:criteria),'%')) OR value LIKE(CONCAT(CONCAT('%',:criteria),'%')))")
 	Page<Message> findAll(String user, String criteria, Pageable page);
 
@@ -127,11 +107,9 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 */
 	@Query("SELECT COUNT(u.id) FROM CacheUser u WHERE :targetType IS NULL                           "
 			+ "  OR (:targetType = 'USER'     AND :target = u.id)"
-			+ "  OR (:targetType = 'GROUP'    AND EXISTS(SELECT 1 FROM CacheMembership c WHERE c.user = u AND (c.group.id = :target"
-			+ "       OR EXISTS(SELECT 1 FROM CacheGroup cg WHERE cg.id=:target AND c.group.description LIKE CONCAT('%,', cg.description)))))"
-			+ "  OR (:targetType = 'COMPANY'  AND (u.company.id = :target "
-			+ "       OR EXISTS(SELECT 1 FROM CacheCompany cc WHERE cc.id=:target AND u.company.description LIKE CONCAT('%,', cc.description))))"
-			+ "  OR (:targetType = 'PROJECT'  AND EXISTS(SELECT 1 FROM Project p WHERE p.pkey = :target AND " + HIS_PROJECTS + "))"
+			+ "  OR (:targetType = 'GROUP'    AND ingroup2(:target,u.id) IS TRUE)                     "
+			+ "  OR (:targetType = 'COMPANY'  AND incompany2(:target,u.id) IS TRUE)                   "
+			+ "  OR (:targetType = 'PROJECT'  AND inprojectkey2(:target,:target,u.id) IS TRUE)                "
 			+ "  OR (:targetType = 'NODE'     AND EXISTS(SELECT 1 FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE "
 			+ HIS_PROJECTS + " AND (n000.id = :target OR n000.id LIKE CONCAT(:target, ':%'))))")
 	int audience(String targetType, String target);
