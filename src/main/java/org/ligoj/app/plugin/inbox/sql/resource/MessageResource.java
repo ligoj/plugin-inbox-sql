@@ -201,7 +201,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 * involved, or targeted.
 	 * For sample with this function, a user can see all messages from a group because this group is visible by this
 	 * user.
-	 * But with the other function {@link #findMy(String, UriInfo)} these messages will be returned because this user is
+	 * But with the other function {@link #findMy(UriInfo)} these messages will be returned because this user is
 	 * not member of this group.
 	 *
 	 * @param uriInfo
