@@ -19,11 +19,11 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 */
 	String MY_MESSAGES = "FROM Message m WHERE (targetType IS NULL                           "
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND target = :user)"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND ingroup(m.target,:user) IS TRUE)"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND incompany(m.target,:user) IS TRUE)"
-			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND inprojectkey(m.target,:user,:user) IS TRUE)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND ingroup(:user,m.target,m.target) IS TRUE)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND incompany(:user,m.target,m.target) IS TRUE)"
+			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND inprojectkey(:user,m.target,:user,m.target) IS TRUE)"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE"
-			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND inproject(p,:user,:user) IS TRUE)))";
+			+ "     (n000.id = m.target OR n000.id LIKE CONCAT(m.target, ':%')) AND inproject(:user,p,:user,p) IS TRUE)))";
 
 	/**
 	 * Base query to find messages a user can see, even if there are not targeting him/her. User can also see his/her
@@ -47,7 +47,7 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	/**
 	 * Base query to find related project to a user "u.id".
 	 */
-	String HIS_PROJECTS = "(inproject2(p,u.id) IS TRUE)";
+	String HIS_PROJECTS = "(inproject2(u.id,p,u.id,p) IS TRUE)";
 
 	/**
 	 * Return all messages where the given user is involved and by criteria.
@@ -105,11 +105,11 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 *            The target configuration : group, node, ...
 	 * @return The amount of users targeted by the given configuration.
 	 */
-	@Query("SELECT COUNT(u.id) FROM CacheUser u WHERE :targetType IS NULL                           "
+	@Query("SELECT COUNT(u.id) FROM CacheUser u WHERE :targetType IS NULL                             "
 			+ "  OR (:targetType = 'USER'     AND :target = u.id)"
-			+ "  OR (:targetType = 'GROUP'    AND ingroup2(:target,u.id) IS TRUE)                     "
-			+ "  OR (:targetType = 'COMPANY'  AND incompany2(:target,u.id) IS TRUE)                   "
-			+ "  OR (:targetType = 'PROJECT'  AND inprojectkey2(:target,:target,u.id) IS TRUE)                "
+			+ "  OR (:targetType = 'GROUP'    AND ingroup2(u.id,:target,:target) IS TRUE)                     "
+			+ "  OR (:targetType = 'COMPANY'  AND incompany2(u.id,:target,:target) IS TRUE)                   "
+			+ "  OR (:targetType = 'PROJECT'  AND inprojectkey2(u.id,:target,u.id,:target) IS TRUE)   "
 			+ "  OR (:targetType = 'NODE'     AND EXISTS(SELECT 1 FROM Subscription s INNER JOIN s.project p INNER JOIN s.node n000 WHERE "
 			+ HIS_PROJECTS + " AND (n000.id = :target OR n000.id LIKE CONCAT(:target, ':%'))))")
 	int audience(String targetType, String target);
