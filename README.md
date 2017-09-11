@@ -7,7 +7,7 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/h5dfqncg9kimntu2/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/plugin-inbox-sql/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/ligoj/plugin-inbox-sql/badge.svg?branch=master)](https://coveralls.io/github/ligoj/plugin-inbox-sql?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/58caeda8dcaf9e0041b5b978/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58caeda8dcaf9e0041b5b978)
-[![Quality Gate](https://sonarqube.com/api/badges/gate?key=org.ligoj.plugin:plugin-inbox-sql)](https://sonarqube.com/dashboard/index/org.ligoj.plugin:plugin-inbox-sql)
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.ligoj.plugin:plugin-inbox-sql)](https://sonarcloud.io/dashboard/index/org.ligoj.plugin:plugin-inbox-sql)
 [![Sourcegraph Badge](https://sourcegraph.com/github.com/ligoj/plugin-inbox-sql/-/badge.svg)](https://sourcegraph.com/github.com/ligoj/plugin-inbox-sql?badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9dc309e27e284411bac3a525cfe1c307)](https://www.codacy.com/app/ligoj/plugin-inbox-sql?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/plugin-inbox-sql&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/plugin-inbox-sql/badge)](https://www.codefactor.io/repository/github/ligoj/plugin-inbox-sql)
