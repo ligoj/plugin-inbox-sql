@@ -237,7 +237,7 @@ define(['cascade'], function ($cascade) {
 					if (data && data.id) {
 						title = current.$main.getFullName(data);
 						href = '#/id/user/' + data.id;
-						content = '>' + data.id.charAt(0) + data.id.charAt(1) + '</a>';
+						content = '>' + current.$main.toUser2Letters(data) + '</a>';
 					} else {
 						content = ' role="button">&nbsp;</a>';
 					}
