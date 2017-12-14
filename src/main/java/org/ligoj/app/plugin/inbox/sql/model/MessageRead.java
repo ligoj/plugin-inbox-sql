@@ -18,11 +18,6 @@ import lombok.Setter;
 public class MessageRead extends AbstractBusinessEntity<String> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Identifier of the last read message. It's not a foreign key to allow message deletion without updating this
 	 * value.
 	 */

@@ -24,11 +24,6 @@ import lombok.Setter;
 public class Message extends AbstractAudited<Integer> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Type of target (group, user, ...). When <code>null</code> the target is everybody.
 	 * 
 	 * @see MessageTargetType

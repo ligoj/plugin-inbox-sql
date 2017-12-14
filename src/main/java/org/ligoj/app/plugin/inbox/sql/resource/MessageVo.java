@@ -17,11 +17,6 @@ import lombok.Setter;
 public class MessageVo extends Message {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Optional project targeted by this message.
 	 */
 	private ProjectLightVo project;
