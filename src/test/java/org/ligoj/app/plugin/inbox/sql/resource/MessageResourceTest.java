@@ -11,13 +11,12 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.app.AbstractAppTest;
+import org.ligoj.app.MatcherUtil;
 import org.ligoj.app.iam.CompanyOrg;
 import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.UserOrg;
@@ -48,16 +47,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * {@link MessageResource} test cases.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MessageResourceTest extends AbstractAppTest {
 
 	@Autowired
@@ -65,19 +63,19 @@ public class MessageResourceTest extends AbstractAppTest {
 	@Autowired
 	private MessageRepository repository;
 
-	@Before
+	@BeforeEach
 	public void prepare() throws IOException {
 		persistEntities("csv",
-				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class,
-						Message.class, DelegateNode.class, DelegateOrg.class, CacheCompany.class, CacheUser.class,
-						CacheGroup.class, CacheMembership.class, CacheProjectGroup.class },
+				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class, Message.class,
+						DelegateNode.class, DelegateOrg.class, CacheCompany.class, CacheUser.class, CacheGroup.class, CacheMembership.class,
+						CacheProjectGroup.class },
 				StandardCharsets.UTF_8.name());
 	}
 
 	@Test
 	public void updateOwnMessageToMe() {
 		// Coverage only
-		Assert.assertEquals(MessageTargetType.COMPANY,
+		Assertions.assertEquals(MessageTargetType.COMPANY,
 				MessageTargetType.valueOf(MessageTargetType.values()[MessageTargetType.COMPANY.ordinal()].name()));
 
 		final int id = repository.findBy("target", DEFAULT_USER).getId();
@@ -92,9 +90,9 @@ public class MessageResourceTest extends AbstractAppTest {
 		em.flush();
 		em.clear();
 		final Message message3 = repository.findOne(id);
-		Assert.assertEquals("gfi-gstack", message3.getTarget());
-		Assert.assertEquals("new", message3.getValue());
-		Assert.assertEquals(MessageTargetType.GROUP, message3.getTargetType());
+		Assertions.assertEquals("gfi-gstack", message3.getTarget());
+		Assertions.assertEquals("new", message3.getValue());
+		Assertions.assertEquals(MessageTargetType.GROUP, message3.getTargetType());
 	}
 
 	@Test
@@ -103,7 +101,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		resource.delete(id);
 		em.flush();
 		em.clear();
-		Assert.assertNull(repository.findOne(id));
+		Assertions.assertNull(repository.findOne(id));
 	}
 
 	@Test
@@ -112,14 +110,16 @@ public class MessageResourceTest extends AbstractAppTest {
 		resource.delete(id);
 		em.flush();
 		em.clear();
-		Assert.assertNull(repository.findOne(id));
+		Assertions.assertNull(repository.findOne(id));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void deletePrivateMessage() {
 		initSpringSecurityContext("any");
 		final int id = repository.findBy("target", "user2").getId();
-		resource.delete(id);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.delete(id);
+		}), "id", "unknown-id");
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		resource.delete(id);
 		em.flush();
 		em.clear();
-		Assert.assertNull(repository.findOne(id));
+		Assertions.assertNull(repository.findOne(id));
 	}
 
 	@Test
@@ -137,14 +137,17 @@ public class MessageResourceTest extends AbstractAppTest {
 		resource.delete(id);
 		em.flush();
 		em.clear();
-		Assert.assertNull(repository.findOne(id));
+		Assertions.assertNull(repository.findOne(id));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void deleteNotManagedGroupMessage() {
 		initSpringSecurityContext("any");
 		final int id = repository.findBy("targetType", MessageTargetType.GROUP).getId();
-		resource.delete(id);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.delete(id);
+		}), "id", "unknown-id");
+
 	}
 
 	@Test
@@ -153,14 +156,17 @@ public class MessageResourceTest extends AbstractAppTest {
 		resource.delete(id);
 		em.flush();
 		em.clear();
-		Assert.assertNull(repository.findOne(id));
+		Assertions.assertNull(repository.findOne(id));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void deleteNotManagedCompanyMessage() {
 		initSpringSecurityContext("any");
 		final int id = repository.findBy("targetType", MessageTargetType.COMPANY).getId();
-		resource.delete(id);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.delete(id);
+		}), "id", "unknown-id");
+
 	}
 
 	@Test
@@ -169,25 +175,34 @@ public class MessageResourceTest extends AbstractAppTest {
 		resource.delete(id);
 		em.flush();
 		em.clear();
-		Assert.assertNull(repository.findOne(id));
+		Assertions.assertNull(repository.findOne(id));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void deleteNotManagedProjectMessage() {
 		initSpringSecurityContext("any");
 		final int id = repository.findBy("targetType", MessageTargetType.PROJECT).getId();
-		resource.delete(id);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.delete(id);
+		}), "id", "unknown-id");
+
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void deleteNotExists() {
-		resource.delete(0);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.delete(0);
+		}), "id", "unknown-id");
+
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void deleteNotVisible() {
 		initSpringSecurityContext("any");
-		resource.delete(repository.findBy("target", DEFAULT_USER).getId());
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.delete(repository.findBy("target", DEFAULT_USER).getId());
+		}), "id", "unknown-id");
+
 	}
 
 	@Test
@@ -207,23 +222,28 @@ public class MessageResourceTest extends AbstractAppTest {
 		return resource;
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void createNotVisibleCompany() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
 		message.setTarget("gfi");
 		message.setTargetType(MessageTargetType.COMPANY);
 		message.setValue("msg");
-		resource.create(message);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.create(message);
+		}), "company", "unknown-id");
+
 	}
 
-	@Test(expected = ForbiddenException.class)
+	@Test
 	public void createXSSScript() {
 		final Message message = new Message();
 		message.setTarget("alongchu");
 		message.setTargetType(MessageTargetType.USER);
 		message.setValue("<script>alert()</script>");
-		mockUser().create(message);
+		Assertions.assertThrows(ForbiddenException.class, () -> {
+			mockUser().create(message);
+		});
 	}
 
 	private MessageResource mockUser() {
@@ -240,22 +260,27 @@ public class MessageResourceTest extends AbstractAppTest {
 		return resource;
 	}
 
-	@Test(expected = ForbiddenException.class)
+	@Test
 	public void createXSSScript2() {
 		final Message message = new Message();
 		message.setTarget("alongchu");
 		message.setTargetType(MessageTargetType.USER);
 		message.setValue("<a href='//google'>alert()</a>");
-		mockUser().create(message);
+		Assertions.assertThrows(ForbiddenException.class, () -> {
+			mockUser().create(message);
+		});
 	}
 
-	@Test(expected = ForbiddenException.class)
+	@Test
 	public void createXSSScript3() {
 		final Message message = new Message();
 		message.setTarget("alongchu");
 		message.setTargetType(MessageTargetType.USER);
 		message.setValue("<img src='http://google'>");
-		mockUser().create(message);
+		Assertions.assertThrows(ForbiddenException.class, () -> {
+			mockUser().create(message);
+		});
+
 	}
 
 	@Test
@@ -265,16 +290,16 @@ public class MessageResourceTest extends AbstractAppTest {
 		messageRead.setMessage(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
 				.setParameter("type", MessageTargetType.PROJECT).getSingleResult() + 2);
 		em.persist(messageRead);
-		Assert.assertEquals(0, repository.countUnread("alongchu"));
+		Assertions.assertEquals(0, repository.countUnread("alongchu"));
 
 		final Message message = new Message();
 		message.setTarget("alongchu");
 		message.setTargetType(MessageTargetType.USER);
 		message.setValue("msg <i class=\"fa fa-smile\"></i>");
 		final int id = mockUser().create(message);
-		Assert.assertTrue(id > 0);
-		Assert.assertEquals("msg <i class=\"fa fa-smile\"></i>", repository.findOne(id).getValue());
-		Assert.assertEquals(1, repository.countUnread("alongchu"));
+		Assertions.assertTrue(id > 0);
+		Assertions.assertEquals("msg <i class=\"fa fa-smile\"></i>", repository.findOne(id).getValue());
+		Assertions.assertEquals(1, repository.countUnread("alongchu"));
 	}
 
 	@Test
@@ -286,14 +311,17 @@ public class MessageResourceTest extends AbstractAppTest {
 		assertMessageCreate(resource, message);
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void createNotVisibleUser() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
 		message.setTarget("alongchu");
 		message.setTargetType(MessageTargetType.USER);
 		message.setValue("msg");
-		resource.create(message);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.create(message);
+		}), "id", "unknown-id");
+
 	}
 
 	@Test
@@ -314,13 +342,16 @@ public class MessageResourceTest extends AbstractAppTest {
 		return resource;
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void createNotVisibleGroup() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
 		message.setTarget("gfi-gstack");
 		message.setTargetType(MessageTargetType.GROUP);
-		resource.create(message);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.create(message);
+		}), "group", "unknown-id");
+
 	}
 
 	@Test
@@ -332,14 +363,16 @@ public class MessageResourceTest extends AbstractAppTest {
 		assertMessageCreate(mockGroup(), message);
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void createNotVisibleProject() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
 		message.setTarget("gfi-gstack");
 		message.setTargetType(MessageTargetType.PROJECT);
 		message.setValue("msg");
-		resource.create(message);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.create(message);
+		}), "pkey", "unknown-id");
 	}
 
 	@Test
@@ -350,20 +383,23 @@ public class MessageResourceTest extends AbstractAppTest {
 		assertMessageCreate(resource, message);
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void createNotVisibleNode() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
 		message.setTarget("service:build:jenkins");
 		message.setTargetType(MessageTargetType.NODE);
 		message.setValue("msg");
-		resource.create(message);
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.create(message);
+		}), "id", "unknown-id");
+
 	}
 
 	@Test
 	public void findMyEmptyNoMatchingUser() {
 		initSpringSecurityContext("any");
-		Assert.assertEquals(0, resource.findMy(newUriInfo()).getData().size());
+		Assertions.assertEquals(0, resource.findMy(newUriInfo()).getData().size());
 	}
 
 	@Test
@@ -371,16 +407,16 @@ public class MessageResourceTest extends AbstractAppTest {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "100");
 		final List<MessageVo> messages = resource.findAll(uriInfo).getData();
-		Assert.assertEquals(17, messages.size());
-		Assert.assertEquals("junit", messages.get(0).getTarget());
-		Assert.assertEquals("gfi", messages.get(7).getTarget());
-		Assert.assertEquals("user2", messages.get(16).getTarget());
+		Assertions.assertEquals(17, messages.size());
+		Assertions.assertEquals("junit", messages.get(0).getTarget());
+		Assertions.assertEquals("gfi", messages.get(7).getTarget());
+		Assertions.assertEquals("user2", messages.get(16).getTarget());
 		em.flush();
 		em.clear();
 
 		// Check pagination
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "2");
-		Assert.assertEquals(2, resource.findMy(uriInfo).getData().size());
+		Assertions.assertEquals(2, resource.findMy(uriInfo).getData().size());
 	}
 
 	@Test
@@ -388,15 +424,15 @@ public class MessageResourceTest extends AbstractAppTest {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "100");
 		final List<MessageVo> messages = resource.findMy(uriInfo).getData();
-		Assert.assertEquals(8, messages.size());
-		Assert.assertEquals("junit", messages.get(0).getTarget());
-		Assert.assertEquals("junit", messages.get(7).getTarget());
+		Assertions.assertEquals(8, messages.size());
+		Assertions.assertEquals("junit", messages.get(0).getTarget());
+		Assertions.assertEquals("junit", messages.get(7).getTarget());
 		em.flush();
 		em.clear();
 
 		// Check pagination
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "2");
-		Assert.assertEquals(2, resource.findMy(uriInfo).getData().size());
+		Assertions.assertEquals(2, resource.findMy(uriInfo).getData().size());
 	}
 
 	@Test
@@ -408,28 +444,28 @@ public class MessageResourceTest extends AbstractAppTest {
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.SORTED_COLUMN, "1");
 		uriInfo.getQueryParameters().putSingle("columns[1][data]", "id");
 		final List<MessageVo> messages = resource.findMy(uriInfo).getData();
-		Assert.assertEquals(6, messages.size());
-		Assert.assertEquals("service:bt", messages.get(5).getTarget());
-		Assert.assertEquals("service:build:jenkins:bpr", messages.get(4).getTarget());
-		Assert.assertEquals("gfi-gstack", messages.get(3).getTarget());
-		Assert.assertEquals("service:build:jenkins", messages.get(2).getTarget());
-		Assert.assertEquals("gfi", messages.get(1).getTarget());
-		Assert.assertEquals("fdaugan", messages.get(0).getTarget());
+		Assertions.assertEquals(6, messages.size());
+		Assertions.assertEquals("service:bt", messages.get(5).getTarget());
+		Assertions.assertEquals("service:build:jenkins:bpr", messages.get(4).getTarget());
+		Assertions.assertEquals("gfi-gstack", messages.get(3).getTarget());
+		Assertions.assertEquals("service:build:jenkins", messages.get(2).getTarget());
+		Assertions.assertEquals("gfi", messages.get(1).getTarget());
+		Assertions.assertEquals("fdaugan", messages.get(0).getTarget());
 	}
 
 	@Test
 	public void findMyUser() {
 		initSpringSecurityContext("user1");
 		final List<MessageVo> messages = resource.findMy(newUriInfo()).getData();
-		Assert.assertEquals(1, messages.size());
+		Assertions.assertEquals(1, messages.size());
 
 		final MessageVo message = messages.get(0);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("user1", message.getTarget());
-		Assert.assertEquals(MessageTargetType.USER, message.getTargetType());
-		Assert.assertEquals("MessageF1", message.getValue());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("user1", message.getUser().getId());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("user1", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.USER, message.getTargetType());
+		Assertions.assertEquals("MessageF1", message.getValue());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("user1", message.getUser().getId());
 	}
 
 	@Test
@@ -458,7 +494,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		initSpringSecurityContext("alongchu");
 
 		prepareUnreadPosition();
-		Assert.assertEquals(3, resource.countUnread());
+		Assertions.assertEquals(3, resource.countUnread());
 
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.PAGE_LENGTH, "100");
@@ -467,86 +503,86 @@ public class MessageResourceTest extends AbstractAppTest {
 		uriInfo.getQueryParameters().putSingle("columns[0][data]", "id");
 
 		final List<MessageVo> messages = resource.findMy(uriInfo).getData();
-		Assert.assertEquals(6, messages.size());
+		Assertions.assertEquals(6, messages.size());
 
 		// Message for the company
 		MessageVo message = messages.get(0);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("gfi", message.getTarget());
-		Assert.assertEquals(MessageTargetType.COMPANY, message.getTargetType());
-		Assert.assertEquals("Message6", message.getValue());
-		Assert.assertTrue(message.isUnread());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("gfi", message.getCompany().getId());
-		Assert.assertEquals("gfi", message.getCompany().getName());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("gfi", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.COMPANY, message.getTargetType());
+		Assertions.assertEquals("Message6", message.getValue());
+		Assertions.assertTrue(message.isUnread());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("gfi", message.getCompany().getId());
+		Assertions.assertEquals("gfi", message.getCompany().getName());
 
 		// Message for node, since this user is in a group linked to a project
 		// subscribing to target instance
 		message = messages.get(1);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("service:build:jenkins", message.getTarget());
-		Assert.assertEquals(MessageTargetType.NODE, message.getTargetType());
-		Assert.assertEquals("Message5", message.getValue());
-		Assert.assertTrue(message.isUnread());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("service:build:jenkins", message.getNode().getId());
-		Assert.assertEquals("Jenkins", message.getNode().getName());
-		Assert.assertEquals("Build", message.getNode().getRefined().getName());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("service:build:jenkins", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.NODE, message.getTargetType());
+		Assertions.assertEquals("Message5", message.getValue());
+		Assertions.assertTrue(message.isUnread());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("service:build:jenkins", message.getNode().getId());
+		Assertions.assertEquals("Jenkins", message.getNode().getName());
+		Assertions.assertEquals("Build", message.getNode().getRefined().getName());
 
 		// Message for group
 		message = messages.get(2);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("gfi-gstack", message.getTarget());
-		Assert.assertEquals(MessageTargetType.PROJECT, message.getTargetType());
-		Assert.assertEquals("Message0", message.getValue());
-		Assert.assertTrue(message.isUnread());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("gStack", message.getProject().getName());
-		Assert.assertEquals("Stack", message.getProject().getDescription());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("gfi-gstack", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.PROJECT, message.getTargetType());
+		Assertions.assertEquals("Message0", message.getValue());
+		Assertions.assertTrue(message.isUnread());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("gStack", message.getProject().getName());
+		Assertions.assertEquals("Stack", message.getProject().getDescription());
 
 		// Message for node, since this user is in a group linked to a project
 		// subscribing to target instance
 		message = messages.get(3);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("service:build:jenkins:bpr", message.getTarget());
-		Assert.assertEquals(MessageTargetType.NODE, message.getTargetType());
-		Assert.assertEquals("Message4", message.getValue());
-		Assert.assertFalse(message.isUnread());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("service:build:jenkins:bpr", message.getNode().getId());
-		Assert.assertNull(message.getNode().getParameters());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("service:build:jenkins:bpr", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.NODE, message.getTargetType());
+		Assertions.assertEquals("Message4", message.getValue());
+		Assertions.assertFalse(message.isUnread());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("service:build:jenkins:bpr", message.getNode().getId());
+		Assertions.assertNull(message.getNode().getParameters());
 
 		// Message for project, since this user is in a group linked to target
 		// project
 		message = messages.get(4);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("service:bt", message.getTarget());
-		Assert.assertEquals(MessageTargetType.NODE, message.getTargetType());
-		Assert.assertEquals("Message3", message.getValue());
-		Assert.assertFalse(message.isUnread());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("service:bt", message.getNode().getId());
-		Assert.assertNull(message.getNode().getParameters());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("service:bt", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.NODE, message.getTargetType());
+		Assertions.assertEquals("Message3", message.getValue());
+		Assertions.assertFalse(message.isUnread());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("service:bt", message.getNode().getId());
+		Assertions.assertNull(message.getNode().getParameters());
 
 		// Message for project, since this user is in a group linked to target
 		// tool
 		message = messages.get(5);
-		Assert.assertNotNull(message.getCreatedDate());
-		Assert.assertEquals("gfi-gstack", message.getTarget());
-		Assert.assertEquals(MessageTargetType.GROUP, message.getTargetType());
-		Assert.assertEquals("Message2", message.getValue());
-		Assert.assertFalse(message.isUnread());
-		Assert.assertEquals("junit", message.getFrom().getId());
-		Assert.assertEquals("gfi-gstack", message.getGroup().getId());
-		Assert.assertEquals("gfi-gStack", message.getGroup().getName());
+		Assertions.assertNotNull(message.getCreatedDate());
+		Assertions.assertEquals("gfi-gstack", message.getTarget());
+		Assertions.assertEquals(MessageTargetType.GROUP, message.getTargetType());
+		Assertions.assertEquals("Message2", message.getValue());
+		Assertions.assertFalse(message.isUnread());
+		Assertions.assertEquals("junit", message.getFrom().getId());
+		Assertions.assertEquals("gfi-gstack", message.getGroup().getId());
+		Assertions.assertEquals("gfi-gStack", message.getGroup().getName());
 		em.flush();
 		em.clear();
 
 		// Check the second pass, there is no more unread messages
 		final List<MessageVo> messagesRe = resource.findMy(uriInfo).getData();
-		Assert.assertEquals(6, messagesRe.size());
-		Assert.assertFalse(messagesRe.get(0).isUnread());
-		Assert.assertEquals(0, resource.countUnread());
+		Assertions.assertEquals(6, messagesRe.size());
+		Assertions.assertFalse(messagesRe.get(0).isUnread());
+		Assertions.assertEquals(0, resource.countUnread());
 	}
 
 	/**
@@ -559,7 +595,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		messageRead.setId("alongchu");
 		messageRead.setMessage(0);
 		em.persist(messageRead);
-		Assert.assertEquals(6, resource.countUnread());
+		Assertions.assertEquals(6, resource.countUnread());
 	}
 
 	/**
@@ -572,18 +608,24 @@ public class MessageResourceTest extends AbstractAppTest {
 		messageRead.setId("alongchu");
 		messageRead.setMessage(Integer.MAX_VALUE);
 		em.persist(messageRead);
-		Assert.assertEquals(0, resource.countUnread());
+		Assertions.assertEquals(0, resource.countUnread());
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceUserRight() {
 		initSpringSecurityContext("any");
-		resource.audience(MessageTargetType.USER, "fdaugan");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.USER, "fdaugan");
+		}), "id", "unknown-id");
+
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceUserUnknown() {
-		resource.audience(MessageTargetType.USER, "any");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.USER, "any");
+		}), "id", "unknown-id");
+
 	}
 
 	@Test
@@ -596,90 +638,110 @@ public class MessageResourceTest extends AbstractAppTest {
 		Mockito.when(resource.userResource.findById("fdaugan")).thenReturn(user);
 		resource.afterPropertiesSet();
 
-		Assert.assertEquals(1, resource.audience(MessageTargetType.USER, "fdaugan"));
+		Assertions.assertEquals(1, resource.audience(MessageTargetType.USER, "fdaugan"));
 	}
 
 	@Test
 	public void audienceGroup() {
-		Assert.assertEquals(1, mockGroup().audience(MessageTargetType.GROUP, "gfi-gstack"));
+		Assertions.assertEquals(1, mockGroup().audience(MessageTargetType.GROUP, "gfi-gstack"));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceGroupUnknown() {
-		resource.audience(MessageTargetType.GROUP, "any");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.GROUP, "any");
+		}), "group", "unknown-id");
+
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceGroupRight() {
 		initSpringSecurityContext("any");
-		resource.audience(MessageTargetType.GROUP, "gfi-gstack");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.GROUP, "gfi-gstack");
+		}), "group", "unknown-id");
+
 	}
 
 	@Test
 	public void audienceCompany() {
 		final MessageResource resource = mockCompany();
 
-		Assert.assertEquals(7, resource.audience(MessageTargetType.COMPANY, "gfi"));
+		Assertions.assertEquals(7, resource.audience(MessageTargetType.COMPANY, "gfi"));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceCompanyRight() {
 		initSpringSecurityContext("any");
-		resource.audience(MessageTargetType.COMPANY, "gfi");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.COMPANY, "gfi");
+		}), "company", "unknown-id");
+
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceCompanyUnknown() {
-		resource.audience(MessageTargetType.COMPANY, "any");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.COMPANY, "any");
+		}), "company", "unknown-id");
+
 	}
 
 	@Test
 	public void audienceProject() {
-		Assert.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "gfi-gstack"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "gfi-gstack"));
 	}
 
 	@Test
 	public void audienceProjectMember() {
 		initSpringSecurityContext("alongchu");
-		Assert.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "gfi-gstack"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "gfi-gstack"));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceProjectRight() {
 		initSpringSecurityContext("any");
-		resource.audience(MessageTargetType.PROJECT, "gfi-gstack");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.PROJECT, "gfi-gstack");
+		}), "pkey", "unknown-id");
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceProjectUnknown() {
 		initSpringSecurityContext("fdaugan");
-		resource.audience(MessageTargetType.PROJECT, "any");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.PROJECT, "any");
+		}), "pkey", "unknown-id");
 	}
 
 	@Test
 	public void audienceNode() {
-		Assert.assertEquals(2, resource.audience(MessageTargetType.NODE, "service:build:jenkins"));
-		Assert.assertEquals(2, resource.audience(MessageTargetType.NODE, "service:build:jenkins:bpr"));
-		Assert.assertEquals(2, resource.audience(MessageTargetType.NODE, "service:scm"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.NODE, "service:build:jenkins"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.NODE, "service:build:jenkins:bpr"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.NODE, "service:scm"));
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceNodeRight() {
 		initSpringSecurityContext("any");
-		resource.audience(MessageTargetType.NODE, "service:build:jenkins");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.NODE, "service:build:jenkins");
+		}), "id", "unknown-id");
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void audienceNodeUnknown() {
-		resource.audience(MessageTargetType.NODE, "service:any");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.audience(MessageTargetType.NODE, "service:any");
+		}), "id", "unknown-id");
 	}
 
 	@Test
 	public void countUnread() {
 		initSpringSecurityContext("alongchu");
 		prepareUnreadPosition();
-		Assert.assertEquals(3, resource.countUnread());
-		Assert.assertEquals(3, resource.countUnread());
+		Assertions.assertEquals(3, resource.countUnread());
+		Assertions.assertEquals(3, resource.countUnread());
 	}
 
 	private void prepareUnreadPosition() {
@@ -698,17 +760,17 @@ public class MessageResourceTest extends AbstractAppTest {
 		messageRead.setMessage(em.createQuery("SELECT id FROM Message WHERE targetType= :type", Integer.class)
 				.setParameter("type", MessageTargetType.PROJECT).getSingleResult() + 2);
 		em.persist(messageRead);
-		Assert.assertEquals(0, repository.countUnread("alongchu"));
+		Assertions.assertEquals(0, repository.countUnread("alongchu"));
 		message.setValue("msg");
 		final int id = resource.create(message);
-		Assert.assertTrue(id > 0);
-		Assert.assertEquals("msg", repository.findOne(id).getValue());
-		Assert.assertEquals(1, repository.countUnread("alongchu"));
+		Assertions.assertTrue(id > 0);
+		Assertions.assertEquals("msg", repository.findOne(id).getValue());
+		Assertions.assertEquals(1, repository.countUnread("alongchu"));
 	}
 
 	@Test
 	public void getKey() {
-		Assert.assertEquals("feature:inbox:sql", resource.getKey());
+		Assertions.assertEquals("feature:inbox:sql", resource.getKey());
 	}
 
 	@Test
@@ -720,6 +782,6 @@ public class MessageResourceTest extends AbstractAppTest {
 		Mockito.when(settings.getUserSettings()).thenReturn(userSettings);
 		Mockito.when(settings.getUserName()).thenReturn("alongchu");
 		resource.decorate(settings);
-		Assert.assertEquals(Integer.valueOf(3), userSettings.get("unreadMessages"));
+		Assertions.assertEquals(Integer.valueOf(3), userSettings.get("unreadMessages"));
 	}
 }
