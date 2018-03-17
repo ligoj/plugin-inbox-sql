@@ -99,7 +99,7 @@ define(['cascade'], function ($cascade) {
 			var $audience = $inbox.find('.message-new .audience');
 			if (target && type !== 'user') {
 				// Reset the audience UI
-				$cascade.appendSpin($audience.removeClass('hidden').find('span').empty(), null, 'fa fa-refresh faa-spin animated');
+				$cascade.appendSpin($audience.removeClass('hidden').find('span').empty(), null, 'fas fa-sync-alt faa-spin animated');
 				$.ajax({
 					url: REST_PATH + 'message/audience/' + encodeURIComponent(type) + '/' + encodeURIComponent(target),
 					dataType: 'json',
@@ -134,7 +134,7 @@ define(['cascade'], function ($cascade) {
 			// Load the messages
 			var filter = $inbox.find('.message-title input').val();
 			var $more = $inbox.find('.more a').addClass('hidden');
-			$cascade.appendSpin($more.closest('.more'), null, 'fa fa-refresh faa-spin animated');
+			$cascade.appendSpin($more.closest('.more'), null, 'fas fa-sync-alt faa-spin animated');
 			$.ajax({
 				dataType: 'json',
 				url: REST_PATH + 'message/my?start=' + (page * 10) + '&length=10&order[0][column]=0&columns[0][name]=id&order[0][dir]=desc' + (filter ? '&search[value]=' + encodeURIComponent(filter) : ''),
@@ -301,7 +301,7 @@ define(['cascade'], function ($cascade) {
 			}
 
 			// Add goto details
-			content += '<i class="fa fa-angle-right message-goto"></i>';
+			content += '<i class="fas fa-angle-right message-goto"></i>';
 
 			content += '</div>';
 			$content.append(content);

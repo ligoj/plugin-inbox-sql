@@ -95,7 +95,7 @@
 	display: inline-block;
 	width: 100%;
 }
-.bs-inbox .popover-title>.fa-refresh {
+.bs-inbox .popover-title>.fa-sync-alt {
 	margin-top: 17px;
 }
 .bs-inbox .new-message {

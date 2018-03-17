@@ -295,10 +295,10 @@ public class MessageResourceTest extends AbstractAppTest {
 		final Message message = new Message();
 		message.setTarget("alongchu");
 		message.setTargetType(MessageTargetType.USER);
-		message.setValue("msg <i class=\"fa fa-smile\"></i>");
+		message.setValue("msg <i class=\"fas fa-smile\"></i>");
 		final int id = mockUser().create(message);
 		Assertions.assertTrue(id > 0);
-		Assertions.assertEquals("msg <i class=\"fa fa-smile\"></i>", repository.findOne(id).getValue());
+		Assertions.assertEquals("msg <i class=\"fas fa-smile\"></i>", repository.findOne(id).getValue());
 		Assertions.assertEquals(1, repository.countUnread("alongchu"));
 	}
 
