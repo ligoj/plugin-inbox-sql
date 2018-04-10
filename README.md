@@ -9,7 +9,7 @@
 [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.ligoj.plugin:plugin-inbox-sql)](https://sonarcloud.io/dashboard/index/org.ligoj.plugin:plugin-inbox-sql)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9dc309e27e284411bac3a525cfe1c307)](https://www.codacy.com/app/ligoj/plugin-inbox-sql?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/plugin-inbox-sql&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/plugin-inbox-sql/badge)](https://www.codefactor.io/repository/github/ligoj/plugin-inbox-sql)
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://gus.mit-license.org/)
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://fabdouglas.mit-license.org/)
 
 [Ligoj](https://github.com/ligoj/ligoj) SQL backed Internal Inbox plugin
 Provides the following features :
