@@ -22,7 +22,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.ligoj.app.api.FeaturePlugin;
 import org.ligoj.app.iam.IUserRepository;
 import org.ligoj.app.iam.IamProvider;
 import org.ligoj.app.plugin.id.resource.CompanyResource;
@@ -41,6 +40,7 @@ import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
+import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
