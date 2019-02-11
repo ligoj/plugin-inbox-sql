@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.UriInfo;
@@ -66,9 +67,9 @@ public class MessageResourceTest extends AbstractAppTest {
 	@BeforeEach
 	public void prepare() throws IOException {
 		persistEntities("csv",
-				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class, Message.class,
-						DelegateNode.class, DelegateOrg.class, CacheCompany.class, CacheUser.class, CacheGroup.class, CacheMembership.class,
-						CacheProjectGroup.class },
+				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class,
+						Message.class, DelegateNode.class, DelegateOrg.class, CacheCompany.class, CacheUser.class,
+						CacheGroup.class, CacheMembership.class, CacheProjectGroup.class },
 				StandardCharsets.UTF_8.name());
 	}
 
@@ -83,14 +84,14 @@ public class MessageResourceTest extends AbstractAppTest {
 
 		final Message message2 = new Message();
 		message2.setId(id);
-		message2.setTarget("gfi-gstack");
+		message2.setTarget("ligoj-gstack");
 		message2.setTargetType(MessageTargetType.GROUP);
 		message2.setValue("new");
 		mockGroup().update(message2);
 		em.flush();
 		em.clear();
 		final Message message3 = repository.findOne(id);
-		Assertions.assertEquals("gfi-gstack", message3.getTarget());
+		Assertions.assertEquals("ligoj-gstack", message3.getTarget());
 		Assertions.assertEquals("new", message3.getValue());
 		Assertions.assertEquals(MessageTargetType.GROUP, message3.getTargetType());
 	}
@@ -208,7 +209,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	@Test
 	public void createCompany() {
 		final Message message = new Message();
-		message.setTarget("gfi");
+		message.setTarget("ligoj");
 		message.setTargetType(MessageTargetType.COMPANY);
 		assertMessageCreate(mockCompany(), message);
 	}
@@ -217,7 +218,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		final MessageResource resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		resource.companyResource = Mockito.mock(CompanyResource.class);
-		Mockito.when(resource.companyResource.findByIdExpected("gfi")).thenReturn(new CompanyOrg("dn", "gfi"));
+		Mockito.when(resource.companyResource.findByIdExpected("ligoj")).thenReturn(new CompanyOrg("dn", "ligoj"));
 		resource.afterPropertiesSet();
 		return resource;
 	}
@@ -226,7 +227,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void createNotVisibleCompany() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
-		message.setTarget("gfi");
+		message.setTarget("ligoj");
 		message.setTargetType(MessageTargetType.COMPANY);
 		message.setValue("msg");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
@@ -327,7 +328,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	@Test
 	public void createGroup() {
 		final Message message = new Message();
-		message.setTarget("gfi-gstack");
+		message.setTarget("ligoj-gstack");
 		message.setTargetType(MessageTargetType.GROUP);
 		assertMessageCreate(mockGroup(), message);
 	}
@@ -336,8 +337,8 @@ public class MessageResourceTest extends AbstractAppTest {
 		final MessageResource resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		resource.groupResource = Mockito.mock(GroupResource.class);
-		Mockito.when(resource.groupResource.findByIdExpected("gfi-gstack"))
-				.thenReturn(new GroupOrg("dn", "gfi-gstack", Collections.emptySet()));
+		Mockito.when(resource.groupResource.findByIdExpected("ligoj-gstack"))
+				.thenReturn(new GroupOrg("dn", "ligoj-gstack", Collections.emptySet()));
 		resource.afterPropertiesSet();
 		return resource;
 	}
@@ -346,7 +347,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void createNotVisibleGroup() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
-		message.setTarget("gfi-gstack");
+		message.setTarget("ligoj-gstack");
 		message.setTargetType(MessageTargetType.GROUP);
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.create(message);
@@ -358,7 +359,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void createProject() {
 		initSpringSecurityContext("fdaugan");
 		final Message message = new Message();
-		message.setTarget("gfi-gstack");
+		message.setTarget("ligoj-gstack");
 		message.setTargetType(MessageTargetType.PROJECT);
 		assertMessageCreate(mockGroup(), message);
 	}
@@ -367,12 +368,10 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void createNotVisibleProject() {
 		initSpringSecurityContext("any");
 		final Message message = new Message();
-		message.setTarget("gfi-gstack");
+		message.setTarget("ligoj-gstack");
 		message.setTargetType(MessageTargetType.PROJECT);
 		message.setValue("msg");
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.create(message);
-		}), "pkey", "unknown-id");
+		Assertions.assertThrows(EntityNotFoundException.class, () -> resource.create(message));
 	}
 
 	@Test
@@ -409,7 +408,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		final List<MessageVo> messages = resource.findAll(uriInfo).getData();
 		Assertions.assertEquals(17, messages.size());
 		Assertions.assertEquals("junit", messages.get(0).getTarget());
-		Assertions.assertEquals("gfi", messages.get(7).getTarget());
+		Assertions.assertEquals("ligoj", messages.get(7).getTarget());
 		Assertions.assertEquals("user2", messages.get(16).getTarget());
 		em.flush();
 		em.clear();
@@ -447,9 +446,9 @@ public class MessageResourceTest extends AbstractAppTest {
 		Assertions.assertEquals(6, messages.size());
 		Assertions.assertEquals("service:bt", messages.get(5).getTarget());
 		Assertions.assertEquals("service:build:jenkins:bpr", messages.get(4).getTarget());
-		Assertions.assertEquals("gfi-gstack", messages.get(3).getTarget());
+		Assertions.assertEquals("ligoj-gstack", messages.get(3).getTarget());
 		Assertions.assertEquals("service:build:jenkins", messages.get(2).getTarget());
-		Assertions.assertEquals("gfi", messages.get(1).getTarget());
+		Assertions.assertEquals("ligoj", messages.get(1).getTarget());
 		Assertions.assertEquals("fdaugan", messages.get(0).getTarget());
 	}
 
@@ -473,22 +472,22 @@ public class MessageResourceTest extends AbstractAppTest {
 		final MessageResource resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		resource.companyResource = Mockito.mock(CompanyResource.class);
-		Mockito.when(resource.companyResource.findByIdExpected("gfi")).thenReturn(new CompanyOrg("dn", "gfi"));
+		Mockito.when(resource.companyResource.findByIdExpected("ligoj")).thenReturn(new CompanyOrg("dn", "ligoj"));
 		final ContainerWithScopeVo container1 = new ContainerWithScopeVo();
-		container1.setId("gfi");
-		container1.setName("gfi");
+		container1.setId("ligoj");
+		container1.setName("ligoj");
 		container1.setScope("some");
 		container1.setLocked(false);
-		Mockito.when(resource.companyResource.findByName("gfi")).thenReturn(container1);
+		Mockito.when(resource.companyResource.findByName("ligoj")).thenReturn(container1);
 		resource.groupResource = Mockito.mock(GroupResource.class);
-		Mockito.when(resource.groupResource.findByIdExpected("gfi-gstack"))
-				.thenReturn(new GroupOrg("dn", "gfi-gstack", Collections.emptySet()));
+		Mockito.when(resource.groupResource.findByIdExpected("ligoj-gstack"))
+				.thenReturn(new GroupOrg("dn", "ligoj-gstack", Collections.emptySet()));
 		final ContainerWithScopeVo container2 = new ContainerWithScopeVo();
-		container2.setId("gfi-gstack");
-		container2.setName("gfi-gStack");
+		container2.setId("ligoj-gstack");
+		container2.setName("ligoj-gStack");
 		container2.setScope("some");
 		container2.setLocked(false);
-		Mockito.when(resource.groupResource.findByName("gfi-gstack")).thenReturn(container2);
+		Mockito.when(resource.groupResource.findByName("ligoj-gstack")).thenReturn(container2);
 		resource.afterPropertiesSet();
 
 		initSpringSecurityContext("alongchu");
@@ -508,13 +507,13 @@ public class MessageResourceTest extends AbstractAppTest {
 		// Message for the company
 		MessageVo message = messages.get(0);
 		Assertions.assertNotNull(message.getCreatedDate());
-		Assertions.assertEquals("gfi", message.getTarget());
+		Assertions.assertEquals("ligoj", message.getTarget());
 		Assertions.assertEquals(MessageTargetType.COMPANY, message.getTargetType());
 		Assertions.assertEquals("Message6", message.getValue());
 		Assertions.assertTrue(message.isUnread());
 		Assertions.assertEquals("junit", message.getFrom().getId());
-		Assertions.assertEquals("gfi", message.getCompany().getId());
-		Assertions.assertEquals("gfi", message.getCompany().getName());
+		Assertions.assertEquals("ligoj", message.getCompany().getId());
+		Assertions.assertEquals("ligoj", message.getCompany().getName());
 
 		// Message for node, since this user is in a group linked to a project
 		// subscribing to target instance
@@ -532,7 +531,7 @@ public class MessageResourceTest extends AbstractAppTest {
 		// Message for group
 		message = messages.get(2);
 		Assertions.assertNotNull(message.getCreatedDate());
-		Assertions.assertEquals("gfi-gstack", message.getTarget());
+		Assertions.assertEquals("ligoj-gstack", message.getTarget());
 		Assertions.assertEquals(MessageTargetType.PROJECT, message.getTargetType());
 		Assertions.assertEquals("Message0", message.getValue());
 		Assertions.assertTrue(message.isUnread());
@@ -568,13 +567,13 @@ public class MessageResourceTest extends AbstractAppTest {
 		// tool
 		message = messages.get(5);
 		Assertions.assertNotNull(message.getCreatedDate());
-		Assertions.assertEquals("gfi-gstack", message.getTarget());
+		Assertions.assertEquals("ligoj-gstack", message.getTarget());
 		Assertions.assertEquals(MessageTargetType.GROUP, message.getTargetType());
 		Assertions.assertEquals("Message2", message.getValue());
 		Assertions.assertFalse(message.isUnread());
 		Assertions.assertEquals("junit", message.getFrom().getId());
-		Assertions.assertEquals("gfi-gstack", message.getGroup().getId());
-		Assertions.assertEquals("gfi-gStack", message.getGroup().getName());
+		Assertions.assertEquals("ligoj-gstack", message.getGroup().getId());
+		Assertions.assertEquals("ligoj-gStack", message.getGroup().getName());
 		em.flush();
 		em.clear();
 
@@ -643,7 +642,7 @@ public class MessageResourceTest extends AbstractAppTest {
 
 	@Test
 	public void audienceGroup() {
-		Assertions.assertEquals(1, mockGroup().audience(MessageTargetType.GROUP, "gfi-gstack"));
+		Assertions.assertEquals(1, mockGroup().audience(MessageTargetType.GROUP, "ligoj-gstack"));
 	}
 
 	@Test
@@ -658,7 +657,7 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void audienceGroupRight() {
 		initSpringSecurityContext("any");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.audience(MessageTargetType.GROUP, "gfi-gstack");
+			resource.audience(MessageTargetType.GROUP, "ligoj-gstack");
 		}), "group", "unknown-id");
 
 	}
@@ -667,14 +666,14 @@ public class MessageResourceTest extends AbstractAppTest {
 	public void audienceCompany() {
 		final MessageResource resource = mockCompany();
 
-		Assertions.assertEquals(7, resource.audience(MessageTargetType.COMPANY, "gfi"));
+		Assertions.assertEquals(7, resource.audience(MessageTargetType.COMPANY, "ligoj"));
 	}
 
 	@Test
 	public void audienceCompanyRight() {
 		initSpringSecurityContext("any");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.audience(MessageTargetType.COMPANY, "gfi");
+			resource.audience(MessageTargetType.COMPANY, "ligoj");
 		}), "company", "unknown-id");
 
 	}
@@ -689,29 +688,27 @@ public class MessageResourceTest extends AbstractAppTest {
 
 	@Test
 	public void audienceProject() {
-		Assertions.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "gfi-gstack"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "ligoj-gstack"));
 	}
 
 	@Test
 	public void audienceProjectMember() {
 		initSpringSecurityContext("alongchu");
-		Assertions.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "gfi-gstack"));
+		Assertions.assertEquals(2, resource.audience(MessageTargetType.PROJECT, "ligoj-gstack"));
 	}
 
 	@Test
 	public void audienceProjectRight() {
 		initSpringSecurityContext("any");
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.audience(MessageTargetType.PROJECT, "gfi-gstack");
-		}), "pkey", "unknown-id");
+		Assertions.assertThrows(EntityNotFoundException.class,
+				() -> resource.audience(MessageTargetType.PROJECT, "ligoj-gstack"));
 	}
 
 	@Test
 	public void audienceProjectUnknown() {
 		initSpringSecurityContext("fdaugan");
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.audience(MessageTargetType.PROJECT, "any");
-		}), "pkey", "unknown-id");
+		Assertions.assertThrows(EntityNotFoundException.class,
+				() -> resource.audience(MessageTargetType.PROJECT, "any"));
 	}
 
 	@Test
