@@ -4,7 +4,7 @@
 [![Build Status](https://circleci.com/gh/ligoj/plugin-inbox-sql.svg?style=svg)](https://circleci.com/gh/ligoj/plugin-inbox-sql)
 [![Build Status](https://semaphoreci.com/api/v1/ligoj/plugin-inbox-sql/branches/master/shields_badge.svg)](https://semaphoreci.com/ligoj/plugin-inbox-sql)
 [![Build Status](https://ci.appveyor.com/api/projects/status/h5dfqncg9kimntu2/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/plugin-inbox-sql/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/ligoj/plugin-inbox-sql/badge.svg?branch=master)](https://coveralls.io/github/ligoj/plugin-inbox-sql?branch=master)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.ligoj.plugin%3plugin-inbox-sql&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=org.ligoj.plugin%3plugin-inbox-sql)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?metric=alert_status&project=org.ligoj.plugin:plugin-inbox-sql)](https://sonarcloud.io/dashboard/index/org.ligoj.plugin:plugin-inbox-sql)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9dc309e27e284411bac3a525cfe1c307)](https://www.codacy.com/app/ligoj/plugin-inbox-sql?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/plugin-inbox-sql&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/plugin-inbox-sql/badge)](https://www.codefactor.io/repository/github/ligoj/plugin-inbox-sql)
