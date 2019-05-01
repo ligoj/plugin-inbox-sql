@@ -128,7 +128,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 		repository.findAll(securityHelper.getLogin(), null, PageRequest.of(0, 20));
 		if (repository.deleteVisible(id, securityHelper.getLogin()) != 1) {
 			// Message not found or not visible. Whatever, return an exception
-			throw new ValidationJsonException("id", BusinessException.KEY_UNKNOW_ID, "0", "message", "1", id);
+			throw new ValidationJsonException("id", BusinessException.KEY_UNKNOWN_ID, "0", "message", "1", id);
 		}
 	}
 
