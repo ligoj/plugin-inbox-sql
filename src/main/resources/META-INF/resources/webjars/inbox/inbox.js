@@ -149,7 +149,7 @@ define(['cascade'], function ($cascade) {
 
 					// Also set the counter UI to 0 and update the popover position
 					$cascade.session.userSettings.unreadMessages = 0;
-					current.$main.updateMessageCounter();
+					$cascade.ext['plugin-inbox-sql'].updateMessageCounter();
 					$cascade.removeSpin($more.closest('.more'));
 					if (messages.length === 10) {
 						// No more messages
