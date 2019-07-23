@@ -263,6 +263,7 @@ define(['cascade'], function ($cascade) {
 				}
 			} else if (page === 0) {
 				// No messages on the first page
+				current.$main.$view.find('.bs-inbox').addClass('inbox-main').find('.more a').addClass('hidden').addClass('hidden');
 				$content.append('<div class="message-w no-messages">' + current.$messages.notifications['no-message'] + '</div>');
 			}
 		},
