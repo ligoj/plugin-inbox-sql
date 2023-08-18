@@ -36,14 +36,14 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.USER    AND createdBy = :user)"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.GROUP   AND EXISTS(SELECT 1 FROM CacheGroup c WHERE c.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateOrg d WHERE (d.type=org.ligoj.app.iam.model.DelegateType.TREE OR d.type=org.ligoj.app.iam.model.DelegateType.GROUP)"
-			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE + ")))"
+			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE_D + ")))"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.COMPANY AND EXISTS(SELECT 1 FROM CacheCompany c WHERE c.id = m.target"
 			+ "       AND EXISTS(SELECT 1 FROM DelegateOrg d WHERE (d.type=org.ligoj.app.iam.model.DelegateType.TREE OR d.type=org.ligoj.app.iam.model.DelegateType.COMPANY)"
-			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE + ")))"
+			+ "           AND c.description LIKE CONCAT('%,', d.dn) AND " + DelegateOrgRepository.ASSIGNED_DELEGATE_D + ")))"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.PROJECT AND EXISTS(SELECT 1 FROM Project p LEFT JOIN p.cacheGroups AS cpg LEFT JOIN cpg.group AS cg   WHERE p.pkey = m.target AND "
 			+ ProjectRepository.VISIBLE_PROJECTS + "))"
 			+ "  OR (targetType = org.ligoj.app.plugin.inbox.sql.model.MessageTargetType.NODE AND EXISTS(SELECT 1    FROM Node n WHERE n.id = m.target"
-			+ "       AND EXISTS(SELECT 1 FROM DelegateNode d WHERE " + DelegateOrgRepository.ASSIGNED_DELEGATE
+			+ "       AND EXISTS(SELECT 1 FROM DelegateNode d WHERE " + DelegateOrgRepository.ASSIGNED_DELEGATE_D
 			+ " AND (n.id LIKE CONCAT(d.name, ':%') OR n.id = d.id)))))";
 
 
