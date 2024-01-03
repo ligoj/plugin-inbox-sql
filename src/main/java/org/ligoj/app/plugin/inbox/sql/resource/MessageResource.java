@@ -100,7 +100,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	/**
 	 * Configuration of checker function for a given {@link MessageTargetType}
 	 */
-	private Map<MessageTargetType, Function<String, INamableBean<?>>> checker = new EnumMap<>(MessageTargetType.class);
+	private final Map<MessageTargetType, Function<String, INamableBean<?>>> checker = new EnumMap<>(MessageTargetType.class);
 
 	/**
 	 * Ordered columns.
@@ -228,7 +228,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 */
 	@GET
 	@Path("audience/{targetType}/{target}")
-	public int audience(@PathParam("targetType") final MessageTargetType targetType, @PathParam("target") final String target) {
+	public long audience(@PathParam("targetType") final MessageTargetType targetType, @PathParam("target") final String target) {
 		return repository.audience(targetType.name(), checkRights(targetType, target));
 	}
 
