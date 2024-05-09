@@ -81,9 +81,9 @@ public interface MessageRepository extends RestRepository<Message, Integer> {
 	 * @return The related messages
 	 */
 	@Query(VISIBLE_MESSAGES + """
-			AND (cast(targetType as String) LIKE(CONCAT(CONCAT('%',:criteria),'%'))
-			  OR target LIKE(CONCAT(CONCAT('%',:criteria),'%')) OR value LIKE(CONCAT(CONCAT('%',:criteria),'%')))
-				""")
+				AND (cast(targetType as String) LIKE(CONCAT(CONCAT('%',:criteria),'%'))
+				  OR target LIKE(CONCAT(CONCAT('%',:criteria),'%')) OR value LIKE(CONCAT(CONCAT('%',:criteria),'%')))
+			""")
 	Page<Message> findAll(String user, String criteria, Pageable page);
 
 	/**
