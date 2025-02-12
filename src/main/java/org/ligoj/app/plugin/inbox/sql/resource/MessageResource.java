@@ -37,7 +37,7 @@ import org.ligoj.app.plugin.inbox.sql.model.MessageRead;
 import org.ligoj.app.plugin.inbox.sql.model.MessageTargetType;
 import org.ligoj.app.resource.node.NodeResource;
 import org.ligoj.app.resource.project.BasicProjectVo;
-import org.ligoj.app.resource.project.ProjectResource;
+import org.ligoj.app.resource.project.ProjectHelper;
 import org.ligoj.bootstrap.core.AuditedBean;
 import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.json.PaginationJson;
@@ -86,7 +86,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	protected CompanyResource companyResource;
 
 	@Autowired
-	protected ProjectResource projectResource;
+	protected ProjectHelper projectHelper;
 
 	@Autowired
 	protected NodeResource nodeResource;
@@ -303,7 +303,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	private void fillTarget(final Message message, final MessageVo vo) {
 		switch (message.getTargetType()) {
 		case PROJECT:
-			vo.setProject(projectResource.findByPKey(message.getTarget()));
+			vo.setProject(projectHelper.findByPKey(message.getTarget()));
 			break;
 		case COMPANY:
 			vo.setCompany(companyResource.findByName(message.getTarget()));
@@ -339,7 +339,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	public void afterPropertiesSet() {
 		checker.put(MessageTargetType.COMPANY, companyResource::findByIdExpected);
 		checker.put(MessageTargetType.GROUP, groupResource::findByIdExpected);
-		checker.put(MessageTargetType.PROJECT, projectResource::findByPKey);
+		checker.put(MessageTargetType.PROJECT, projectHelper::findByPKey);
 		checker.put(MessageTargetType.NODE, nodeResource::findById);
 		checker.put(MessageTargetType.USER, userResource::findById);
 	}
