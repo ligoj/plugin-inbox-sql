@@ -1,4 +1,4 @@
-# :link: Ligoj SQL backed Internal Inbox plugin [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.plugin/plugin-inbox-sql/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.plugin/plugin-inbox-sql)
+# :link: Ligoj SQL backed Internal Inbox plugin ![Maven Central](https://img.shields.io/maven-central/v/org.ligoj.plugin/plugin-inbox-sql)
 
 [![Build Status](https://app.travis-ci.com/github/ligoj/plugin-inbox-sql.svg?branch=master)](https://app.travis-ci.com/github/ligoj/plugin-inbox-sql)
 [![Build Status](https://circleci.com/gh/ligoj/plugin-inbox-sql.svg?style=svg)](https://circleci.com/gh/ligoj/plugin-inbox-sql)
