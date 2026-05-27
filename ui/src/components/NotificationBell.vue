@@ -8,11 +8,23 @@
       </v-btn>
     </template>
 
-    <v-card min-width="350">
-      <v-card-title class="d-flex align-center py-2">
+    <v-card min-width="380">
+      <v-card-title class="d-flex align-center py-2 ga-1">
         <span class="text-subtitle-1 font-weight-medium">{{ t('notification.title') }}</span>
         <v-spacer />
-        <v-btn v-if="notifications.length" variant="text" size="small" @click="markAllRead">{{ t('notification.markAllRead') }}</v-btn>
+        <!-- Icon-only secondary action. The Vuetify <v-tooltip> child
+             pattern (`activator="parent"`) gives the proper themed
+             tooltip — the browser's native `title=` attribute looked
+             out of place against the rest of the popover chrome. -->
+        <v-btn v-if="notifications.length" icon size="small" variant="text" @click="markAllRead">
+          <v-icon size="x-small">mdi-check-all</v-icon>
+          <v-tooltip activator="parent" location="bottom">{{ t('notification.markAllRead') }}</v-tooltip>
+        </v-btn>
+        <!-- Primary action sits on the far right of the popover header. -->
+        <v-btn icon size="small" variant="text" @click="openCompose">
+          <v-icon size="x-small">mdi-email-plus-outline</v-icon>
+          <v-tooltip activator="parent" location="bottom">{{ t('notification.new') }}</v-tooltip>
+        </v-btn>
       </v-card-title>
       <v-divider />
       <v-list v-if="notifications.length" density="compact" class="pa-0" max-height="360" style="overflow-y: auto">
@@ -31,16 +43,23 @@
       </v-card-text>
     </v-card>
   </v-menu>
+
+  <!-- Compose dialog. Mounted at the bell's root so its overlay sits
+       above the popover; opening it closes the popover via the click
+       handler below before the dialog activates. -->
+  <NewMessageDialog v-model="composeOpen" @sent="onSent" />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18nStore } from '@ligoj/host'
 import service from '../service.js'
+import NewMessageDialog from './NewMessageDialog.vue'
 
 const { t } = useI18nStore()
 
 const open = ref(false)
+const composeOpen = ref(false)
 const notifications = ref([])
 let pollTimer = null
 
@@ -69,6 +88,15 @@ function markAllRead() {
   notifications.value.forEach(n => { n.read = true })
 }
 
+function openCompose() {
+  // Close the popover before opening the dialog so the two overlays
+  // don't stack — Vuetify can leave the popover focused-trap active
+  // when both are open at once, swallowing the dialog's keyboard
+  // navigation (ESC, Tab).
+  open.value = false
+  composeOpen.value = true
+}
+
 async function loadNotifications() {
   const data = await service.findMy()
   if (!data || data.code) return
@@ -83,6 +111,12 @@ async function loadNotifications() {
     read: !m.unread,
     timestamp: m.createdDate || m.created || Date.now(),
   }))
+}
+
+function onSent() {
+  // Refresh immediately so the sender sees their own message land in
+  // the bell (also implicitly advances the read cursor server-side).
+  loadNotifications()
 }
 
 onMounted(() => {
