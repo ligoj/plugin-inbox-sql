@@ -1,0 +1,4 @@
+node_modules
+dist
+.vite
+src/main/resources/META-INF/resources/webjars/inbox-sql/vue/index.js
