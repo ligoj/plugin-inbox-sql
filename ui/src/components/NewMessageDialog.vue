@@ -36,7 +36,7 @@
                per-item icons here — the type icon next to the field
                above already signals the category, and the entity name
                alone (or display name for users) is enough to pick. -->
-          <v-autocomplete v-model="form.target" v-model:search="targetQuery" :items="targetItems" :item-title="targetLabel" :item-value="getTargetId" :label="t('notification.toTarget')"
+          <LigojAutocomplete v-model="form.target" v-model:search="targetQuery" :items="targetItems" :item-title="targetLabel" :item-value="getTargetId" :label="t('notification.toTarget')"
             :loading="loadingTargets" :no-filter="true" :hide-no-data="loadingTargets" :rules="REQUIRED" variant="outlined" density="compact" class="mb-1" @update:search="searchTargetsDebounced"
             @update:model-value="refreshAudience" />
 
@@ -63,7 +63,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
-import { useErrorStore, useI18nStore } from '@ligoj/host'
+import { LigojAutocomplete, useErrorStore, useI18nStore } from '@ligoj/host'
 import service from '../service.js'
 
 const props = defineProps({
