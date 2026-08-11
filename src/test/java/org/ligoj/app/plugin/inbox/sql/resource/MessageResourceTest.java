@@ -26,7 +26,6 @@ import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.ligoj.bootstrap.resource.system.session.SessionSettings;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,6 +36,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * {@link MessageResource} test cases.
@@ -193,8 +195,8 @@ class MessageResourceTest extends AbstractAppTest {
 	private MessageResource mockCompany() {
 		final var resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		resource.companyResource = Mockito.mock(CompanyResource.class);
-		Mockito.when(resource.companyResource.findByIdExpected("ligoj")).thenReturn(new CompanyOrg("dn", "ligoj"));
+		resource.companyResource = mock(CompanyResource.class);
+		when(resource.companyResource.findByIdExpected("ligoj")).thenReturn(new CompanyOrg("dn", "ligoj"));
 		resource.afterPropertiesSet();
 		return resource;
 	}
@@ -222,13 +224,13 @@ class MessageResourceTest extends AbstractAppTest {
 	private MessageResource mockUser() {
 		final var resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		resource.userResource = Mockito.mock(UserOrgResource.class);
+		resource.userResource = mock(UserOrgResource.class);
 		var user = new UserOrg();
 		user.setId("admin-test");
-		Mockito.when(resource.userResource.findById("admin-test")).thenReturn(user);
+		when(resource.userResource.findById("admin-test")).thenReturn(user);
 		var user2 = new UserOrg();
 		user2.setId("junit");
-		Mockito.when(resource.userResource.findById("junit")).thenReturn(user2);
+		when(resource.userResource.findById("junit")).thenReturn(user2);
 		resource.afterPropertiesSet();
 		return resource;
 	}
@@ -302,8 +304,8 @@ class MessageResourceTest extends AbstractAppTest {
 	private MessageResource mockGroup() {
 		final var resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		resource.groupResource = Mockito.mock(GroupResource.class);
-		Mockito.when(resource.groupResource.findByIdExpected("ligoj-jupiter"))
+		resource.groupResource = mock(GroupResource.class);
+		when(resource.groupResource.findByIdExpected("ligoj-jupiter"))
 				.thenReturn(new GroupOrg("dn", "ligoj-jupiter", Collections.emptySet()));
 		resource.afterPropertiesSet();
 		return resource;
@@ -433,23 +435,23 @@ class MessageResourceTest extends AbstractAppTest {
 	void findMyGroup() {
 		final var resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		resource.companyResource = Mockito.mock(CompanyResource.class);
-		Mockito.when(resource.companyResource.findByIdExpected("ligoj")).thenReturn(new CompanyOrg("dn", "ligoj"));
+		resource.companyResource = mock(CompanyResource.class);
+		when(resource.companyResource.findByIdExpected("ligoj")).thenReturn(new CompanyOrg("dn", "ligoj"));
 		final var container1 = new ContainerWithScopeVo();
 		container1.setId("ligoj");
 		container1.setName("ligoj");
 		container1.setScope("some");
 		container1.setLocked(false);
-		Mockito.when(resource.companyResource.findByName("ligoj")).thenReturn(container1);
-		resource.groupResource = Mockito.mock(GroupResource.class);
-		Mockito.when(resource.groupResource.findByIdExpected("ligoj-jupiter"))
+		when(resource.companyResource.findByName("ligoj")).thenReturn(container1);
+		resource.groupResource = mock(GroupResource.class);
+		when(resource.groupResource.findByIdExpected("ligoj-jupiter"))
 				.thenReturn(new GroupOrg("dn", "ligoj-jupiter", Collections.emptySet()));
 		final var container2 = new ContainerWithScopeVo();
 		container2.setId("ligoj-jupiter");
 		container2.setName("ligoj-Jupiter");
 		container2.setScope("some");
 		container2.setLocked(false);
-		Mockito.when(resource.groupResource.findByName("ligoj-jupiter")).thenReturn(container2);
+		when(resource.groupResource.findByName("ligoj-jupiter")).thenReturn(container2);
 		resource.afterPropertiesSet();
 
 		initSpringSecurityContext("admin-test");
@@ -589,10 +591,10 @@ class MessageResourceTest extends AbstractAppTest {
 	void audienceUser() {
 		final MessageResource resource = new MessageResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		resource.userResource = Mockito.mock(UserOrgResource.class);
+		resource.userResource = mock(UserOrgResource.class);
 		var user = new UserOrg();
 		user.setId("fdaugan");
-		Mockito.when(resource.userResource.findById("fdaugan")).thenReturn(user);
+		when(resource.userResource.findById("fdaugan")).thenReturn(user);
 		resource.afterPropertiesSet();
 
 		Assertions.assertEquals(1, resource.audience(MessageTargetType.USER, "fdaugan"));
@@ -720,10 +722,10 @@ class MessageResourceTest extends AbstractAppTest {
 	void decorate() {
 		initSpringSecurityContext("admin-test");
 		prepareUnreadPosition();
-		var settings = Mockito.mock(SessionSettings.class);
+		var settings = mock(SessionSettings.class);
 		Map<String, Object> userSettings = new HashMap<>();
-		Mockito.when(settings.getUserSettings()).thenReturn(userSettings);
-		Mockito.when(settings.getUserName()).thenReturn("admin-test");
+		when(settings.getUserSettings()).thenReturn(userSettings);
+		when(settings.getUserName()).thenReturn("admin-test");
 		resource.decorate(settings);
 		Assertions.assertEquals(3, userSettings.get("unreadMessages"));
 	}
