@@ -19,7 +19,7 @@
                blank because `v-bind="props"` and an explicit `:title`
                were stepping on each other. The closed-select chip uses
                a `#selection` slot which composes cleanly. -->
-          <v-select v-model="form.targetType" :items="TYPE_OPTIONS" item-title="label" item-value="value" :item-props="typeItemProps" :label="t('notification.toType')" :hint="targetHint"
+          <LigojSelect v-model="form.targetType" :items="TYPE_OPTIONS" item-title="label" item-value="value" :item-props="typeItemProps" :label="t('notification.toType')" :hint="targetHint"
             persistent-hint variant="outlined" density="compact" class="mb-3" @update:model-value="onTypeChange">
             <template #selection="{ item }">
               <span v-if="item" class="d-inline-flex align-center ga-2">
@@ -27,7 +27,7 @@
                 {{ item.title }}
               </span>
             </template>
-          </v-select>
+          </LigojSelect>
 
           <!-- Target autocomplete. Re-fetches on every keystroke
                (debounced via the @update:search handler). The backend
@@ -63,7 +63,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
-import { LigojAutocomplete, useErrorStore, useI18nStore } from '@ligoj/host'
+import { LigojSelect, LigojAutocomplete, useErrorStore, useI18nStore } from '@ligoj/host'
 import service from '../service.js'
 
 const props = defineProps({
