@@ -47,7 +47,7 @@
             </v-chip>
           </div>
 
-          <v-textarea v-model="form.value" :label="t('notification.message')" :hint="t('notification.messageHint')" :rules="REQUIRED" rows="5" variant="outlined" density="compact" persistent-hint />
+          <LigojTextarea v-model="form.value" :label="t('notification.message')" :hint="t('notification.messageHint')" :rules="REQUIRED" rows="5" variant="outlined" density="compact" persistent-hint />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -63,7 +63,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
-import { LigojSelect, LigojAutocomplete, useErrorStore, useI18nStore } from '@ligoj/host'
+import { LigojTextarea, LigojSelect, LigojAutocomplete, useErrorStore, useI18nStore } from '@ligoj/host'
 import service from '../service.js'
 
 const props = defineProps({
