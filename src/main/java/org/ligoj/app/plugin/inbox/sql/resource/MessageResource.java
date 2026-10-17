@@ -209,7 +209,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 *
 	 * @param uriInfo
 	 *            filter data.
-	 * @return Related messages, already read or not. Also there is an indicator on the message specifying the "new"
+	 * @return Related messages, already read or not. Also, there is an indicator on the message specifying the "new"
 	 *         state.
 	 */
 	@GET
@@ -237,7 +237,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 *
 	 * @param uriInfo
 	 *            filter data.
-	 * @return Related messages, already read or not. Also there is an indicator on the message specifying the "new"
+	 * @return Related messages, already read or not. Also, there is an indicator on the message specifying the "new"
 	 *         state.
 	 */
 	@GET
@@ -253,7 +253,7 @@ public class MessageResource implements InitializingBean, ISessionSettingsProvid
 	 *            filter data.
 	 * @param function
 	 *            Function providing the messages from a request and a user.
-	 * @return Related messages, already read or not. Also there is an indicator on the message specifying the "new"
+	 * @return Related messages, already read or not. Also, there is an indicator on the message specifying the "new"
 	 *         state.
 	 */
 	private TableItem<MessageVo> findAllProvider(final UriInfo uriInfo, final BiFunction<String, PageRequest, Page<Message>> function) {
